@@ -1,0 +1,127 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>
+{% block title %}
+GameVault
+{% endblock %}
+</title>
+
+
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+
+</head>
+
+
+<body>
+
+
+<header>
+
+
+<div class="logo">
+
+🎮 GameVault
+
+</div>
+
+
+<nav>
+
+
+<a href="{% url 'lista_jogos' %}">
+Início
+</a>
+
+
+<a href="{% url 'cadastrar_jogo' %}">
+Cadastrar
+</a>
+
+
+<button id="tema">
+
+🌙
+
+</button>
+
+
+</nav>
+
+
+</header>
+
+
+
+{% if messages %}
+
+<div class="mensagens">
+
+{% for message in messages %}
+
+<p>
+{{ message }}
+</p>
+
+{% endfor %}
+
+</div>
+
+{% endif %}
+
+
+
+<main>
+
+
+{% block content %}
+
+{% endblock %}
+
+
+</main>
+
+
+
+<footer>
+
+GameVault © 2026
+
+</footer>
+
+
+
+<script>
+
+
+const botaoTema = document.getElementById("tema");
+
+
+botaoTema.onclick = function(){
+
+
+document.body.classList.toggle("light");
+
+
+};
+
+
+</script>
+
+
+</body>
+
+
+</html>

@@ -1,0 +1,100 @@
+{% extends 'jogos/base.html' %}
+
+
+
+{% block title %}
+
+Excluir {{ jogo.nome }} - GameVault
+
+{% endblock %}
+
+
+
+
+{% block content %}
+
+
+
+
+<section class="excluir-container">
+
+
+
+<div class="excluir-card">
+
+
+
+<h1>
+
+🗑 Excluir Jogo
+
+</h1>
+
+
+
+
+<p>
+
+Tem certeza que deseja excluir:
+
+</p>
+
+
+
+<h2>
+
+{{ jogo.nome }}
+
+</h2>
+
+
+
+
+<p class="aviso">
+
+Essa ação não poderá ser desfeita.
+
+</p>
+
+
+
+
+
+<form method="POST">
+
+
+{% csrf_token %}
+
+
+
+<button type="submit">
+
+Sim, excluir
+
+</button>
+
+
+
+<a href="{% url 'lista_jogos' %}">
+
+Cancelar
+
+</a>
+
+
+
+</form>
+
+
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+{% endblock %}
