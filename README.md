@@ -320,8 +320,8 @@ Dashboard administrativo utilizado para gerenciar jogos e gêneros cadastrados.
 
 # 👨‍💻 Desenvolvedor
 
-**Vitor Silva**
-
+**Vitor Faria de Oliveira e Silva**
+**Rafael Junqueira de Souza**
 Projeto acadêmico desenvolvido para a disciplina de Backend utilizando Python e Django.
 
 ---
