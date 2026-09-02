@@ -1,0 +1,316 @@
+{% extends 'jogos/base.html' %}
+
+
+{% block title %}
+
+GameVault
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+
+<section class="pesquisa">
+
+
+<form method="GET">
+
+
+<input 
+type="text"
+name="buscar"
+placeholder="🔍 Pesquisar jogos..."
+value="{{ busca|default:'' }}"
+>
+
+
+<button type="submit">
+
+Pesquisar
+
+</button>
+
+
+</form>
+
+
+</section>
+
+
+
+
+<section class="hero">
+
+
+<h1>
+
+Descubra sua próxima aventura 🎮
+
+</h1>
+
+
+<p>
+
+Sua biblioteca de jogos em um só lugar.
+
+</p>
+
+
+<a href="{% url 'cadastrar_jogo' %}" class="botao">
+
++ Adicionar Jogo
+
+</a>
+
+
+</section>
+
+
+
+
+
+<section class="dashboard">
+
+
+<div class="estatistica">
+
+
+<h2>
+
+{{ total_jogos }}
+
+</h2>
+
+
+<p>
+
+Jogos cadastrados
+
+</p>
+
+
+</div>
+
+
+
+<div class="estatistica">
+
+
+<h2>
+
+{{ total_generos }}
+
+</h2>
+
+
+<p>
+
+Gêneros
+
+</p>
+
+
+</div>
+
+
+
+<div class="estatistica">
+
+
+<h2>
+
+{% if jogo_mais_caro %}
+
+R$ {{ jogo_mais_caro.preco }}
+
+{% else %}
+
+R$ 0
+
+{% endif %}
+
+
+</h2>
+
+
+<p>
+
+Jogo mais caro
+
+</p>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+<section class="biblioteca">
+
+
+<h2>
+
+🎮 Biblioteca
+
+</h2>
+
+
+
+<div class="grid">
+
+
+{% for jogo in jogos %}
+
+
+
+<div class="jogo-card">
+
+
+
+
+
+{% if jogo.capa %}
+
+
+<img 
+src="{{ jogo.capa.url }}"
+class="capa-jogo"
+>
+
+
+
+{% else %}
+
+
+<div class="sem-capa">
+
+🎮
+
+</div>
+
+
+{% endif %}
+
+
+
+
+
+
+<div class="conteudo-jogo">
+
+
+
+<h3>
+
+{{ jogo.nome }}
+
+</h3>
+
+
+
+<p>
+
+🏢 {{ jogo.desenvolvedora }}
+
+</p>
+
+
+<p>
+
+🎮 {{ jogo.plataforma }}
+
+</p>
+
+
+
+<p>
+
+🏷 {{ jogo.genero }}
+
+</p>
+
+
+
+<strong>
+
+R$ {{ jogo.preco }}
+
+</strong>
+
+
+
+
+
+<div class="botoes-jogo">
+
+
+
+<a href="{% url 'detalhe_jogo' jogo.id %}">
+
+Ver
+
+</a>
+
+
+
+<a href="{% url 'editar_jogo' jogo.id %}">
+
+Editar
+
+</a>
+
+
+
+<a href="{% url 'excluir_jogo' jogo.id %}">
+
+Excluir
+
+</a>
+
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+{% empty %}
+
+
+
+<h3>
+
+Nenhum jogo cadastrado.
+
+</h3>
+
+
+
+{% endfor %}
+
+
+
+</div>
+
+
+</section>
+
+
+
+{% endblock %}

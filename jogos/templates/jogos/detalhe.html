@@ -1,0 +1,205 @@
+{% extends 'jogos/base.html' %}
+
+
+{% block title %}
+
+{{ jogo.nome }} - GameVault
+
+{% endblock %}
+
+
+
+{% block content %}
+
+
+
+<section class="detalhe-container">
+
+
+
+<div class="detalhe-card">
+
+
+
+
+
+{% if jogo.capa %}
+
+
+<img 
+src="{{ jogo.capa.url }}"
+class="detalhe-capa"
+>
+
+
+
+{% else %}
+
+
+<div class="sem-capa detalhe-sem-capa">
+
+🎮
+
+</div>
+
+
+{% endif %}
+
+
+
+
+
+
+<h1>
+
+🎮 {{ jogo.nome }}
+
+</h1>
+
+
+
+<br>
+
+
+
+<p>
+
+<strong>Desenvolvedora:</strong>
+
+{{ jogo.desenvolvedora }}
+
+</p>
+
+
+
+<p>
+
+<strong>Distribuidora:</strong>
+
+{{ jogo.distribuidora }}
+
+</p>
+
+
+
+<p>
+
+<strong>Plataforma:</strong>
+
+{{ jogo.plataforma }}
+
+</p>
+
+
+
+<p>
+
+<strong>Descrição:</strong>
+
+{{ jogo.descricao }}
+
+</p>
+
+
+
+<p>
+
+<strong>Preço:</strong>
+
+R$ {{ jogo.preco }}
+
+</p>
+
+
+
+<p>
+
+<strong>Lançamento:</strong>
+
+{{ jogo.data_lancamento }}
+
+</p>
+
+
+
+<p>
+
+<strong>Classificação:</strong>
+
+{{ jogo.classificacao }}
+
+</p>
+
+
+
+<p>
+
+<strong>Multiplayer:</strong>
+
+
+{% if jogo.multiplayer %}
+
+Sim 🎮
+
+{% else %}
+
+Não
+
+{% endif %}
+
+
+</p>
+
+
+
+<p>
+
+<strong>Gênero:</strong>
+
+{{ jogo.genero }}
+
+</p>
+
+
+
+
+
+<div class="botoes-detalhe">
+
+
+<a href="{% url 'editar_jogo' jogo.id %}">
+
+✏ Editar
+
+</a>
+
+
+
+<a href="{% url 'excluir_jogo' jogo.id %}">
+
+🗑 Excluir
+
+</a>
+
+
+
+<a href="{% url 'lista_jogos' %}">
+
+⬅ Voltar
+
+</a>
+
+
+</div>
+
+
+
+</div>
+
+
+
+</section>
+
+
+
+{% endblock %}

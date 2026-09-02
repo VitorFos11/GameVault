@@ -1,0 +1,28 @@
+# Ambiente virtual
+venv/
+env/
+.venv/
+
+# Banco de dados local
+db.sqlite3
+
+# Cache Python
+__pycache__/
+*.py[cod]
+
+# Arquivos do Django
+*.log
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Configurações do VS Code
+.vscode/
+
+# Migrações (opcional)
+# Se o professor precisar ver as migrations, NÃO coloque isso.
+# jogos/migrations/*.py
+
+# Arquivos enviados pelo usuário
+media/
