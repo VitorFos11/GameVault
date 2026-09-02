@@ -314,7 +314,7 @@ Dashboard administrativo utilizado para gerenciar jogos e gêneros cadastrados.
 
 <p align="center">
 
-<img src="images/admin-home.png" width="900">
+<img src="images/home-admin.png" width="900">
 
 </p>
 
