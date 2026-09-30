@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}{{ jogo.nome }} — GameVault{% endblock %}
+
+{% block content %}
+<section class="gv-hero-game">
+  {% if jogo.banner %}<img src="{{ jogo.banner.url }}" alt="" class="banner">{% endif %}
+  <div class="overlay"></div>
+</section>
+
+<div class="gv-detail-layout">
+  <div class="gv-detail-cover">
+    {% if jogo.capa %}<img src="{{ jogo.capa.url }}" alt="Capa de {{ jogo.nome }}">{% else %}<div class="cover-placeholder" style="aspect-ratio:3/4">🎮</div>{% endif %}
+  </div>
+  <div>
+    <h1 class="gv-page-title">{{ jogo.nome }}</h1>
+    <p class="gv-page-sub">{{ jogo.desenvolvedora }} · {{ jogo.nome_plataforma }} · {{ jogo.genero.nome }}</p>
+    <span class="gv-badge status-{{ jogo.status }}">{{ jogo.get_status_display }}</span>
+
+    <div class="gv-detail-actions">
+      <a href="{% url 'editar_jogo' jogo.id %}" class="gv-btn gv-btn-primary">Editar</a>
+      <button type="button" class="gv-btn gv-btn-danger" data-modal-open="modal-excluir">Excluir</button>
+      {% if na_lista_desejo %}
+      <form method="post" action="{% url 'remover_lista_desejo' jogo.id %}">{% csrf_token %}<button class="gv-btn gv-btn-ghost">Remover wishlist</button></form>
+      {% else %}
+      <form method="post" action="{% url 'adicionar_lista_desejo' jogo.id %}">{% csrf_token %}<button class="gv-btn gv-btn-ghost">♡ Wishlist</button></form>
+      {% endif %}
+      <form method="post" action="{% url 'alterar_status_rapido' jogo.id %}">{% csrf_token %}
+        <select name="status" class="gv-input" style="width:auto" onchange="this.form.submit()" aria-label="Alterar status">
+          {% for val, label in status_choices %}
+          <option value="{{ val }}" {% if jogo.status == val %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </form>
+    </div>
+
+    <div class="gv-detail-panel">
+      <h2>Progresso</h2>
+      <div class="gv-progress" style="height:10px;margin:0.75rem 0"><span style="width:{{ jogo.percentual_conclusao }}%"></span></div>
+      <p>{{ jogo.percentual_conclusao }}% concluído · {{ jogo.horas_jogadas|floatformat:1 }}h jogadas</p>
+      <form method="post" action="{% url 'atualizar_progresso' jogo.id %}" class="gv-form-grid" style="margin-top:1rem">
+        {% csrf_token %}
+        {{ progresso_form.as_p }}
+        <button type="submit" class="gv-btn gv-btn-primary">Atualizar progresso</button>
+      </form>
+    </div>
+
+    <div class="gv-detail-panel">
+      <h2>Descrição</h2>
+      <p>{{ jogo.descricao|linebreaksbr }}</p>
+      {% if jogo.website %}<p><a href="{{ jogo.website }}" target="_blank" rel="noopener">Site oficial</a></p>{% endif %}
+    </div>
+
+    <div class="gv-detail-panel">
+      <h2>Conquistas ({{ conquistas_ok }}/{{ total_conquistas }})</h2>
+      <div class="gv-progress"><span style="width:{{ pct_conquistas }}%"></span></div>
+      <ul>
+        {% for c in jogo.conquistas.all %}
+        <li>{% if c.concluida %}✓{% else %}○{% endif %} {{ c.nome }}</li>
+        {% empty %}
+        <li class="meta">Nenhuma conquista cadastrada.</li>
+        {% endfor %}
+      </ul>
+      <form method="post" action="{% url 'adicionar_conquista' jogo.id %}" style="margin-top:1rem">{% csrf_token %}{{ conquista_form.as_p }}<button class="gv-btn gv-btn-ghost">Adicionar</button></form>
+    </div>
+
+    <div class="gv-detail-panel">
+      <h2>Sua avaliação</h2>
+      <form method="post" action="{% url 'salvar_avaliacao' jogo.id %}">{% csrf_token %}{{ avaliacao_form.as_p }}<button class="gv-btn gv-btn-primary">Salvar avaliação</button></form>
+    </div>
+
+    <div class="gv-detail-panel">
+      <h2>Registrar sessão</h2>
+      <form method="post" action="{% url 'registrar_sessao' jogo.id %}">{% csrf_token %}{{ sessao_form.as_p }}<button class="gv-btn gv-btn-ghost">Registrar</button></form>
+    </div>
+  </div>
+</div>
+
+<div id="modal-excluir" class="gv-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-excluir-title">
+  <div class="gv-modal">
+    <h2 id="modal-excluir-title">Excluir jogo?</h2>
+    <p>Esta ação remove "{{ jogo.nome }}" permanentemente.</p>
+    <div class="gv-detail-actions">
+      <form method="post" action="{% url 'excluir_jogo' jogo.id %}">{% csrf_token %}<button class="gv-btn gv-btn-danger">Confirmar</button></form>
+      <button type="button" class="gv-btn gv-btn-ghost" data-modal-close>Cancelar</button>
+    </div>
+  </div>
+</div>
+{% endblock %}

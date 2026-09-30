@@ -1,0 +1,7 @@
+{% if messages %}
+<div class="gv-toast-stack" role="status" aria-live="polite">
+  {% for message in messages %}
+  <div class="gv-toast {% if message.tags %}{{ message.tags }}{% else %}success{% endif %}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}

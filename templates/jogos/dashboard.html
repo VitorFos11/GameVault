@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — GameVault{% endblock %}
+
+{% block content %}
+<h1 class="gv-page-title">Dashboard</h1>
+<p class="gv-page-sub">Visão geral da sua biblioteca</p>
+
+<div class="gv-stat-grid">
+  <div class="gv-stat-card"><div class="value">{{ total_jogos }}</div><div class="label">Total de jogos</div></div>
+  <div class="gv-stat-card"><div class="value">{{ jogando }}</div><div class="label">Jogando</div></div>
+  <div class="gv-stat-card"><div class="value">{{ concluidos }}</div><div class="label">Concluídos</div></div>
+  <div class="gv-stat-card"><div class="value">{{ backlog }}</div><div class="label">Backlog</div></div>
+  <div class="gv-stat-card"><div class="value">{{ wishlist_count }}</div><div class="label">Wishlist</div></div>
+  <div class="gv-stat-card"><div class="value">{{ horas_jogadas|floatformat:0 }}h</div><div class="label">Horas jogadas</div></div>
+</div>
+
+<div class="gv-stat-grid">
+  <div class="gv-stat-card"><div class="value">{{ taxa_conclusao }}%</div><div class="label">Taxa de conclusão</div></div>
+  <div class="gv-stat-card"><div class="value">{% if media_avaliacao %}{{ media_avaliacao|floatformat:1 }}{% else %}—{% endif %}</div><div class="label">Média pessoal</div></div>
+</div>
+
+<div class="gv-chart-grid">
+  <div class="gv-chart-card"><h3>Plataformas</h3><canvas id="chartPlat" height="200"></canvas></div>
+  <div class="gv-chart-card"><h3>Gêneros</h3><canvas id="chartGen" height="200"></canvas></div>
+  <div class="gv-chart-card"><h3>Status</h3><canvas id="chartStatus" height="200"></canvas></div>
+  <div class="gv-chart-card"><h3>Ano de lançamento</h3><canvas id="chartAnos" height="200"></canvas></div>
+</div>
+
+<section style="margin-top:2rem">
+  <h2 class="gv-page-title" style="font-size:1.15rem">Recomendados para você</h2>
+  {% if recomendados %}
+  <div class="gv-game-grid" style="margin-top:1rem">
+    {% for jogo in recomendados %}
+      {% include "includes/game_card.html" with jogo=jogo %}
+    {% endfor %}
+  </div>
+  {% else %}
+  {% include "includes/empty_state.html" with message="Adicione jogos e avaliações para ver recomendações." cta_url="cadastrar_jogo" cta_label="Adicionar jogo" %}
+  {% endif %}
+</section>
+
+<section style="margin-top:2rem">
+  <h2 class="gv-page-title" style="font-size:1.15rem">Adicionados recentemente</h2>
+  <div class="gv-game-grid" style="margin-top:1rem">
+    {% for jogo in recentes %}
+      {% include "includes/game_card.html" with jogo=jogo %}
+    {% empty %}
+    <p class="meta">Nenhum jogo ainda.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const plat = {{ chart_plataformas|safe }};
+const gen = {{ chart_generos|safe }};
+const st = {{ chart_status|safe }};
+const anos = {{ chart_anos|safe }};
+const common = { responsive: true, plugins: { legend: { display: false } } };
+new Chart(document.getElementById('chartPlat'), { type: 'bar', data: { labels: plat.labels, datasets: [{ data: plat.values, backgroundColor: '#6366f1' }] }, options: common });
+new Chart(document.getElementById('chartGen'), { type: 'doughnut', data: { labels: gen.labels, datasets: [{ data: gen.values, backgroundColor: ['#6366f1','#22d3ee','#a855f7','#22c55e','#eab308','#f97316'] }] }, options: common });
+new Chart(document.getElementById('chartStatus'), { type: 'pie', data: { labels: st.labels, datasets: [{ data: st.values, backgroundColor: '#818cf8' }] }, options: common });
+new Chart(document.getElementById('chartAnos'), { type: 'line', data: { labels: anos.labels, datasets: [{ data: anos.values, borderColor: '#22d3ee', tension: 0.3 }] }, options: common });
+</script>
+{% endblock %}

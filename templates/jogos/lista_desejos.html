@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Wishlist — GameVault{% endblock %}
+{% block content %}
+<h1 class="gv-page-title">Lista de desejos</h1>
+<p class="gv-page-sub">Jogos que você quer adquirir ou jogar</p>
+{% if itens %}
+<div class="gv-game-grid">
+  {% for item in itens %}
+  <article class="gv-game-card">
+    {% with jogo=item.jogo %}
+    {% if jogo.capa %}<img src="{{ jogo.capa.url }}" class="cover" alt="">{% else %}<div class="cover-placeholder">♡</div>{% endif %}
+    <div class="body">
+      <h3><a href="{% url 'detalhe_jogo' jogo.id %}">{{ jogo.nome }}</a></h3>
+      <p class="meta">Prioridade: {{ item.get_prioridade_display }}</p>
+      {% if item.preco_alvo %}<p class="meta">Alvo: R$ {{ item.preco_alvo }}</p>{% endif %}
+      <a href="{% url 'editar_item_desejo' item.id %}" class="gv-btn gv-btn-ghost" style="margin-top:0.5rem">Editar</a>
+    </div>
+    {% endwith %}
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+{% include "includes/empty_state.html" with message="Sua wishlist está vazia." cta_url="biblioteca" cta_label="Ver biblioteca" %}
+{% endif %}
+{% endblock %}

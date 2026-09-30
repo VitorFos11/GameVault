@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block title %}404 — GameVault{% endblock %}
+{% block content_public %}
+<div class="gv-empty" style="min-height:80vh;display:grid;place-content:center"><h1>Página não encontrada</h1><a href="{% url 'landing' %}" class="gv-btn gv-btn-primary">Início</a></div>
+{% endblock %}

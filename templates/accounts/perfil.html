@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Perfil — GameVault{% endblock %}
+{% block content %}
+<h1 class="gv-page-title">Perfil</h1>
+<div class="gv-stat-grid">
+  <div class="gv-stat-card"><div class="value">{{ stats.total_jogos }}</div><div class="label">Jogos</div></div>
+  <div class="gv-stat-card"><div class="value">{{ stats.concluidos }}</div><div class="label">Concluídos</div></div>
+  <div class="gv-stat-card"><div class="value">{{ stats.horas_jogadas|floatformat:0 }}h</div><div class="label">Horas</div></div>
+  <div class="gv-stat-card"><div class="value">{% if media_avaliacao %}{{ media_avaliacao|floatformat:1 }}{% else %}—{% endif %}</div><div class="label">Média</div></div>
+</div>
+<form method="post" enctype="multipart/form-data" class="gv-detail-panel">{% csrf_token %}{{ form.as_p }}<button class="gv-btn gv-btn-primary">Salvar perfil</button></form>
+<p class="meta" style="margin-top:1rem">Membro desde {{ member_since|date:"d/m/Y" }}</p>
+{% endblock %}

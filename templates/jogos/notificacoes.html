@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Notificações — GameVault{% endblock %}
+{% block content %}
+<h1 class="gv-page-title">Notificações</h1>
+{% for n in notificacoes %}
+<div class="gv-detail-panel"><strong>{{ n.titulo }}</strong><p class="meta">{{ n.mensagem }} · {{ n.criado_em }}</p></div>
+{% empty %}<p class="meta">Sem notificações.</p>{% endfor %}
+{% endblock %}

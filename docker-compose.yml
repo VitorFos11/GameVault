@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: gamevault
+      POSTGRES_USER: gamevault
+      POSTGRES_PASSWORD: gamevault
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgres://gamevault:gamevault@db:5432/gamevault
+      DEBUG: "True"
+    depends_on:
+      - db
+
+volumes:
+  pgdata:

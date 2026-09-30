@@ -1,0 +1,12 @@
+<header class="gv-topbar">
+  <button type="button" class="gv-btn gv-btn-ghost" data-sidebar-toggle aria-label="Recolher menu">☰</button>
+  <form class="gv-search-global" method="get" action="{% url 'biblioteca' %}" role="search">
+    <label for="global-search" class="visually-hidden">Buscar jogos</label>
+    <input id="global-search" type="search" name="buscar" placeholder="Buscar jogos..." value="{{ request.GET.buscar|default:'' }}">
+  </form>
+  <a href="{% url 'notificacoes' %}" class="gv-btn gv-btn-ghost" aria-label="Notificações">
+    🔔{% if notificacoes_nao_lidas %} <span>({{ notificacoes_nao_lidas }})</span>{% endif %}
+  </a>
+  <a href="{% url 'cadastrar_jogo' %}" class="gv-btn gv-btn-primary">+ Jogo</a>
+  <a href="{% url 'accounts:perfil' %}" class="gv-btn gv-btn-ghost" title="Perfil">{{ user.username|slice:":1"|upper }}</a>
+</header>
