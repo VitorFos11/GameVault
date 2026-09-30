@@ -17,6 +17,8 @@ Isso faz o GitHub contar **Cursor** como contribuidor.
 
 **Antes de commitar pelo Agent:** em **Cursor → Settings**, desative opções de incluir co-autor em commits (se existirem), ou revise a mensagem e remova a linha `Co-authored-by: Cursor` antes do push.
 
+**Hook local (opcional):** copie um script `commit-msg` que rode `scripts/strip_cursor_coauthor.py` sobre a mensagem — assim commits feitos pelo Cursor no seu PC não levam o trailer.
+
 ## Corrigir histórico (já feito uma vez)
 
 ```powershell
