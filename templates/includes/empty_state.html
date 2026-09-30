@@ -1,0 +1,6 @@
+<div class="gv-empty">
+  <p>{{ message|default:"Nada por aqui ainda." }}</p>
+  {% if cta_url %}
+  <a href="{% url cta_url %}" class="gv-btn gv-btn-primary" style="margin-top:1rem">{{ cta_label|default:"Começar" }}</a>
+  {% endif %}
+</div>

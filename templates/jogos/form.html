@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}{{ titulo|default:"Jogo" }} — GameVault{% endblock %}
+
+{% block content %}
+<h1 class="gv-page-title">{{ titulo|default:"Jogo" }}</h1>
+<p class="gv-page-sub">Preencha as informações do jogo</p>
+
+<form method="post" enctype="multipart/form-data" class="gv-detail-panel">
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="gv-toast error">{{ form.non_field_errors }}</div>{% endif %}
+
+  <div class="gv-form-section">
+    <h2>Informações básicas</h2>
+    <div class="gv-form-grid">
+      <div class="gv-form-field">{{ form.nome.label_tag }}{{ form.nome }}{{ form.nome.errors }}</div>
+      <div class="gv-form-field">{{ form.descricao.label_tag }}{{ form.descricao }}{{ form.descricao.errors }}</div>
+      <div class="gv-form-field">{{ form.capa.label_tag }}{{ form.capa }}{{ form.capa.errors }}</div>
+      <div class="gv-form-field">{{ form.banner.label_tag }}{{ form.banner }}{{ form.banner.errors }}</div>
+    </div>
+  </div>
+
+  <div class="gv-form-section">
+    <h2>Lançamento</h2>
+    <div class="gv-form-grid">
+      <div class="gv-form-field">{{ form.data_lancamento.label_tag }}{{ form.data_lancamento }}</div>
+      <div class="gv-form-field">{{ form.desenvolvedora.label_tag }}{{ form.desenvolvedora }}</div>
+      <div class="gv-form-field">{{ form.distribuidora.label_tag }}{{ form.distribuidora }}</div>
+      <div class="gv-form-field">{{ form.website.label_tag }}{{ form.website }}</div>
+    </div>
+  </div>
+
+  <div class="gv-form-section">
+    <h2>Classificação</h2>
+    <div class="gv-form-grid">
+      <div class="gv-form-field">{{ form.genero.label_tag }}{{ form.genero }}</div>
+      <div class="gv-form-field">{{ form.generos.label_tag }}{{ form.generos }}</div>
+      <div class="gv-form-field">{{ form.plataforma_ref.label_tag }}{{ form.plataforma_ref }}</div>
+      <div class="gv-form-field">{{ form.tags.label_tag }}{{ form.tags }}</div>
+      <div class="gv-form-field">{{ form.classificacao.label_tag }}{{ form.classificacao }}</div>
+      <div class="gv-form-field">{{ form.multiplayer.label_tag }}{{ form.multiplayer }}</div>
+    </div>
+  </div>
+
+  <div class="gv-form-section">
+    <h2>Pessoal</h2>
+    <div class="gv-form-grid">
+      <div class="gv-form-field">{{ form.status.label_tag }}{{ form.status }}</div>
+      <div class="gv-form-field">{{ form.avaliacao_pessoal.label_tag }}{{ form.avaliacao_pessoal }}</div>
+      <div class="gv-form-field">{{ form.preco.label_tag }}{{ form.preco }}</div>
+      <div class="gv-form-field">{{ form.preco_compra.label_tag }}{{ form.preco_compra }}</div>
+      <div class="gv-form-field">{{ form.horas_jogadas.label_tag }}{{ form.horas_jogadas }}</div>
+      <div class="gv-form-field">{{ form.percentual_conclusao.label_tag }}{{ form.percentual_conclusao }}</div>
+    </div>
+  </div>
+
+  <button type="submit" class="gv-btn gv-btn-primary">Salvar</button>
+  <a href="{% if jogo %}{% url 'detalhe_jogo' jogo.id %}{% else %}{% url 'biblioteca' %}{% endif %}" class="gv-btn gv-btn-ghost">Cancelar</a>
+</form>
+{% endblock %}

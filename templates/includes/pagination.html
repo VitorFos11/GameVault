@@ -1,0 +1,11 @@
+{% if page_obj.has_other_pages %}
+<nav class="gv-detail-actions" aria-label="Paginação">
+  {% if page_obj.has_previous %}
+  <a class="gv-btn gv-btn-ghost" href="?{% for k,v in request.GET.items %}{% if k != 'page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">Anterior</a>
+  {% endif %}
+  <span class="meta">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+  <a class="gv-btn gv-btn-ghost" href="?{% for k,v in request.GET.items %}{% if k != 'page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">Próxima</a>
+  {% endif %}
+</nav>
+{% endif %}

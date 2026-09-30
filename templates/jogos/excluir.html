@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Excluir — GameVault{% endblock %}
+{% block content %}
+<div class="gv-detail-panel" style="max-width:520px;margin:2rem auto;text-align:center">
+  <h1 class="gv-page-title">Excluir jogo?</h1>
+  <p class="gv-page-sub">{{ jogo.nome }} será removido permanentemente.</p>
+  <form method="post" class="gv-detail-actions" style="justify-content:center">{% csrf_token %}
+    <button class="gv-btn gv-btn-danger">Confirmar exclusão</button>
+    <a href="{% url 'detalhe_jogo' jogo.id %}" class="gv-btn gv-btn-ghost">Cancelar</a>
+  </form>
+</div>
+{% endblock %}

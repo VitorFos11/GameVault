@@ -1,0 +1,32 @@
+{% load static %}
+<aside class="gv-sidebar" aria-label="Navegação principal">
+  <a href="{% url 'dashboard' %}" class="gv-logo">
+    <img src="{% static 'img/logo-icon.svg' %}" alt="" width="36" height="36">
+    <img src="{% static 'img/logo-full.svg' %}" alt="GameVault" class="logo-full" height="32">
+  </a>
+  <nav class="gv-nav">
+    <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+      <span class="gv-nav-icon" aria-hidden="true">▣</span><span class="nav-label">Dashboard</span>
+    </a>
+    <a href="{% url 'biblioteca' %}" class="{% if request.resolver_match.url_name == 'biblioteca' or request.resolver_match.url_name == 'lista_jogos' %}active{% endif %}">
+      <span class="gv-nav-icon" aria-hidden="true">▤</span><span class="nav-label">Biblioteca</span>
+    </a>
+    <a href="{% url 'lista_desejos' %}" class="{% if request.resolver_match.url_name == 'lista_desejos' %}active{% endif %}">
+      <span class="gv-nav-icon" aria-hidden="true">♡</span><span class="nav-label">Wishlist</span>
+    </a>
+    <a href="{% url 'conquistas' %}" class="{% if request.resolver_match.url_name == 'conquistas' %}active{% endif %}">
+      <span class="gv-nav-icon" aria-hidden="true">★</span><span class="nav-label">Conquistas</span>
+    </a>
+    <a href="{% url 'estatisticas' %}" class="{% if request.resolver_match.url_name == 'estatisticas' %}active{% endif %}">
+      <span class="gv-nav-icon" aria-hidden="true">◔</span><span class="nav-label">Estatísticas</span>
+    </a>
+    <a href="{% url 'importar_jogo_api' %}" class="{% if request.resolver_match.url_name == 'importar_jogo_api' %}active{% endif %}">
+      <span class="gv-nav-icon" aria-hidden="true">⇣</span><span class="nav-label">Importar</span>
+    </a>
+  </nav>
+  <nav class="gv-nav" style="margin-top:auto">
+    <a href="{% url 'configuracoes' %}" class="{% if request.resolver_match.url_name == 'configuracoes' %}active{% endif %}">
+      <span class="gv-nav-icon" aria-hidden="true">⚙</span><span class="nav-label">Configurações</span>
+    </a>
+  </nav>
+</aside>

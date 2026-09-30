@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Configurações — GameVault{% endblock %}
+{% block content %}
+<h1 class="gv-page-title">Configurações</h1>
+<section class="gv-detail-panel">
+  <h2>Aparência</h2>
+  <p class="meta">Escolha o tema da interface.</p>
+  <div class="gv-detail-actions">
+    <button type="button" class="gv-btn gv-btn-ghost" data-theme-toggle>Alternar claro/escuro</button>
+  </div>
+  <p class="meta" style="margin-top:1rem">Conta: <a href="{% url 'accounts:perfil' %}">Editar perfil</a></p>
+</section>
+{% endblock %}

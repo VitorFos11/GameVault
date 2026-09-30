@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Conquistas — GameVault{% endblock %}
+{% block content %}
+<h1 class="gv-page-title">Conquistas</h1>
+{% for jogo in jogos %}
+<div class="gv-detail-panel">
+  <h2>{{ jogo.nome }}</h2>
+  <ul>
+    {% for c in jogo.conquistas.all %}
+    <li>{% if c.concluida %}✓{% else %}○{% endif %} {{ c.nome }} — {{ c.descricao }}</li>
+    {% empty %}<li class="meta">Sem conquistas.</li>{% endfor %}
+  </ul>
+</div>
+{% empty %}
+{% include "includes/empty_state.html" with message="Cadastre conquistas nos detalhes de cada jogo." cta_url="biblioteca" cta_label="Ir à biblioteca" %}
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Entrar — GameVault{% endblock %}
+{% block content_public %}
+<div class="gv-landing-hero" style="min-height:100vh">
+  <img src="{% static 'img/logo-full.svg' %}" alt="GameVault" height="40">
+  <h1 style="font-size:1.75rem;margin-top:1.5rem">Entrar no GameVault</h1>
+  <form method="post" class="gv-detail-panel" style="width:min(400px,100%);margin-top:1.5rem;text-align:left">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="gv-btn gv-btn-primary" style="width:100%;margin-top:1rem">Entrar</button>
+  </form>
+  <p style="margin-top:1rem"><a href="{% url 'accounts:registro' %}">Criar conta</a> · <a href="{% url 'landing' %}">Início</a></p>
+</div>
+{% endblock %}

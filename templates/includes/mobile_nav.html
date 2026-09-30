@@ -1,0 +1,6 @@
+<nav class="gv-mobile-nav" aria-label="Navegação mobile">
+  <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Dash</a>
+  <a href="{% url 'biblioteca' %}" class="{% if request.resolver_match.url_name == 'biblioteca' %}active{% endif %}">Library</a>
+  <a href="{% url 'lista_desejos' %}">Wish</a>
+  <a href="{% url 'accounts:perfil' %}">Perfil</a>
+</nav>
