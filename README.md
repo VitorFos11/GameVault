@@ -44,7 +44,7 @@ Plataforma **Django** para gerenciar coleção pessoal de jogos: **dashboard** c
 
 
 
-Entrega acadêmica: **quatro tabelas de domínio** (`Gênero`, `Plataforma`, `Jogo`, `Avaliação`) com **1:N** (gênero→jogo, jogo→avaliação) e **N:N** (jogo↔plataforma), **CRUD** completo e conferência no **DBeaver** (SQLite).
+Entrega acadêmica: **quatro tabelas de domínio** (`Gênero`, `Plataforma`, `Jogo`, `Avaliação`) com **1:N** (gênero→jogo, jogo→avaliação) e **N:N** (jogo↔plataforma), **CRUD** completo e conferência no **`db.sqlite3`** (DBeaver ou DB Browser for SQLite).
 
 
 
@@ -70,7 +70,7 @@ Entrega acadêmica: **quatro tabelas de domínio** (`Gênero`, `Plataforma`, `Jo
 
 | **5. Detalhe** | Avaliação, sessões, conquistas, wishlist, painel de relacionamentos |
 
-| **6. Apresentação** | Cadastre no site → atualize tabelas no **DBeaver** (mesmo `db.sqlite3`) |
+| **6. Apresentação** | Cadastre no site → atualize o **`db.sqlite3`** no DBeaver ou DB Browser |
 
 | **7. Extra** | Admin Jazzmin, PostgreSQL opcional via `.env` |
 
@@ -214,7 +214,7 @@ python manage.py runserver
 
 | Porta ocupada | `python manage.py runserver 8080` |
 
-| DBeaver: native library (Windows) | [docs/DATABASE_DBEAVER.md](docs/DATABASE_DBEAVER.md) — pasta temp / driver SQLite |
+| DBeaver: native library (Windows) | [docs/DATABASE_DBEAVER.md](docs/DATABASE_DBEAVER.md) ou [DB Browser](docs/DB_BROWSER_SQLITE.md) |
 
 
 
@@ -302,9 +302,11 @@ Não há chaves de API externa — cadastro de jogos é **manual** pelo site.
 
 | **SQLite (padrão)** | Arquivo `db.sqlite3` na raiz, após `migrate` |
 
-| **DBeaver (SQLite)** | Campo **Path**: arquivo `db.sqlite3` na **raiz do projeto** (sem host/senha). Ex.: `...\GameVault\db.sqlite3` |
+| **Visualizar (SQLite)** | Arquivo `db.sqlite3` na **raiz** (sem host/senha). DBeaver: campo **Path** · DB Browser: **Abrir banco de dados** |
 
 | **Conferência terminal** | `python scripts/list_db_tables.py` |
+
+| **DBeaver (Windows)** | `powershell -ExecutionPolicy Bypass -File scripts/setup_dbeaver_sqlite_native.ps1` (driver 3.44 + DLL) |
 
 
 
@@ -312,9 +314,11 @@ Documentação:
 
 
 
-- [docs/DATABASE_DBEAVER.md](docs/DATABASE_DBEAVER.md) — conexão, ER, apresentação ao vivo
+- [docs/DATABASE_DBEAVER.md](docs/DATABASE_DBEAVER.md) — DBeaver, ER, apresentação ao vivo
 
-- [docs/dbeaver_conexao_pronta.md](docs/dbeaver_conexao_pronta.md) — checklist Windows
+- [docs/DB_BROWSER_SQLITE.md](docs/DB_BROWSER_SQLITE.md) — alternativa estável no Windows
+
+- [docs/dbeaver_conexao_pronta.md](docs/dbeaver_conexao_pronta.md) — checklist de conexão
 
 - [docs/dbeaver_apresentacao.sql](docs/dbeaver_apresentacao.sql) — queries para demo
 

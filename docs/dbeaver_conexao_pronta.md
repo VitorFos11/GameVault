@@ -33,16 +33,27 @@ cd C:\Users\HOME\OneDrive\Desktop\Game_Valte\GameVault
 .\venv\Scripts\python.exe scripts\list_db_tables.py
 ```
 
-## Se ainda der erro de native library
+## Se ainda der erro (`NativeDB._open_utf8` ou *Unexpected driver error*)
 
-1. DBeaver fechado → **Gerenciador de drivers** → **SQLite** → **Bibliotecas** → **Baixar/Atualizar**.
-2. Ou **Add File** → JAR em  
-   `%APPDATA%\DBeaverData\drivers\maven\maven-central\org.xerial\sqlite-jdbc-3.53.4.0.jar`  
-   (deve existir após o download do Maven).
+1. **Feche** o DBeaver.
+2. Na pasta do GameVault:
 
-3. Reinicie o DBeaver.
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\setup_dbeaver_sqlite_native.ps1
+```
+
+3. Confira em `%LOCALAPPDATA%\DBeaver\dbeaver.ini` as linhas `-Dorg.sqlite.tmpdir`, `-Dorg.sqlite.lib.path` e `-Dorg.sqlite.lib.name=sqlitejdbc`.
+4. Abra o DBeaver de novo → **Testar conexão**.
+
+Alternativa: **Gerenciador de drivers** → **SQLite** → **Bibliotecas** → **Baixar/Atualizar**.
+
+## Se o SQLite no DBeaver nunca conectar (Java 25 / native library)
+
+Use **DB Browser for SQLite** com o mesmo `db.sqlite3` — guia: [DB_BROWSER_SQLITE.md](DB_BROWSER_SQLITE.md).  
+Válido para mostrar tabelas e SQL na apresentação.
 
 ## Importante
 
 - **Não** use PostgreSQL para este projeto enquanto o `.env` não tiver `DATABASE_URL`.
 - Host/senha **não se aplicam** ao SQLite.
+- **Não** adicione `-Djava.library.path` no `dbeaver.ini` (derruba o DBeaver ao abrir).

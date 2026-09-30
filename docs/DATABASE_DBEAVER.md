@@ -74,6 +74,39 @@ O driver **sqlite-jdbc** precisa extrair uma DLL nativa para uma pasta temporár
 
 Referência: [DBeaver issue #13793](https://github.com/dbeaver/dbeaver/issues/13793).
 
+### Erro: `NativeDB._open_utf8` / *No native library found* / *Unexpected driver error*
+
+Causa: o driver **sqlite-jdbc** não carrega a DLL (temp bloqueada, antivírus ou **Java 25** do DBeaver 26 com JDBC 3.53+).
+
+**Correção recomendada (script + driver 3.44.1.0):**
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\setup_dbeaver_sqlite_native.ps1
+```
+
+Feche e reabra o DBeaver. O script baixa **sqlite-jdbc 3.44.1.0**, copia para a pasta de drivers do DBeaver e extrai `sqlitejdbc.dll`.
+
+No `dbeaver.ini` (**depois** de `-vmargs`), deve existir algo como:
+
+```ini
+-Dorg.sqlite.tmpdir=C:\Users\HOME\DBeaver\sqlite-tmp
+-Djava.io.tmpdir=C:\Users\HOME\DBeaver\sqlite-tmp
+-Dorg.sqlite.lib.path=C:/Users/HOME/DBeaver/sqlite-native-344/org/sqlite/native/Windows/x86_64
+-Dorg.sqlite.lib.name=sqlitejdbc
+```
+
+**Não** use `-Djava.library.path` no `dbeaver.ini` — isso impede o DBeaver de carregar a interface (SWT) e o programa nem abre.
+
+No projeto, rode (PowerShell, DBeaver **fechado**):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\setup_dbeaver_sqlite_native.ps1
+```
+
+Reabra o DBeaver e teste a conexão SQLite com o **Path**:
+
+`C:\Users\HOME\OneDrive\Desktop\Game_Valte\GameVault\db.sqlite3`
+
 ### Ligar o script SQL à conexão
 
 No editor, o dropdown ao lado do nome do script não pode ficar em **N/A**: escolha a conexão do `db.sqlite3`.  
