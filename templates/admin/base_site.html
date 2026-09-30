@@ -1,0 +1,17 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block branding %}
+<a href="{% url 'admin:index' %}" class="brand-link" style="text-decoration:none;display:flex;align-items:center;gap:.6rem;padding:.75rem 1rem">
+  <img src="{% static 'img/logo-icon.svg' %}" alt="GameVault" width="32" height="32" style="flex-shrink:0">
+  <span class="brand-text" style="font-weight:700;font-size:1.05rem;letter-spacing:.04em">GameVault</span>
+</a>
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+  /* garante que logo-icon.svg sempre apareça mesmo em temas claros do AdminLTE */
+  .brand-link img { filter: drop-shadow(0 0 6px rgba(99,102,241,.5)); }
+</style>
+{% endblock %}

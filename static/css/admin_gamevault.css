@@ -1,0 +1,248 @@
+/* ============================================================
+   GameVault — Admin custom overrides para Jazzmin/AdminLTE
+   ============================================================ */
+
+:root {
+  --gv-primary: #6366f1;
+  --gv-primary-dark: #4f46e5;
+  --gv-secondary: #22d3ee;
+  --gv-surface: #12141c;
+  --gv-surface-el: #1a1d28;
+  --gv-border: rgba(148, 163, 184, 0.15);
+  --gv-text: #f1f5f9;
+  --gv-muted: #94a3b8;
+  --gv-success: #22c55e;
+  --gv-warning: #eab308;
+  --gv-danger: #ef4444;
+}
+
+/* ── Logo na sidebar ─────────────────────────────────────── */
+.brand-link {
+  border-bottom: 1px solid var(--gv-border) !important;
+  background: #0d0f18 !important;
+}
+
+.brand-link .brand-text {
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, #a5b4fc, var(--gv-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+.main-sidebar,
+.sidebar {
+  background: #0d0f18 !important;
+}
+
+.nav-sidebar .nav-item .nav-link {
+  border-radius: 6px;
+  margin: 1px 6px;
+  transition: background 0.18s;
+  color: var(--gv-muted) !important;
+}
+
+.nav-sidebar .nav-item .nav-link:hover,
+.nav-sidebar .nav-item .nav-link.active {
+  background: rgba(99, 102, 241, 0.18) !important;
+  color: #a5b4fc !important;
+}
+
+.nav-sidebar .nav-item .nav-link.active {
+  border-left: 3px solid var(--gv-primary);
+}
+
+.nav-sidebar .nav-item > .nav-treeview {
+  background: transparent !important;
+}
+
+/* ── Navbar (topo) ───────────────────────────────────────── */
+.main-header.navbar {
+  background: #0d0f18 !important;
+  border-bottom: 1px solid var(--gv-border);
+}
+
+/* ── Cards de estatística (index) ────────────────────────── */
+.info-box {
+  border-radius: 10px !important;
+  border: 1px solid var(--gv-border) !important;
+  background: var(--gv-surface-el) !important;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+
+.info-box:hover {
+  transform: translateY(-3px);
+}
+
+.info-box-icon {
+  border-radius: 8px 0 0 8px !important;
+  background: rgba(99, 102, 241, 0.2) !important;
+  color: #a5b4fc !important;
+  font-size: 2rem !important;
+}
+
+.info-box-number {
+  font-size: 1.6rem !important;
+  font-weight: 700;
+  color: var(--gv-text) !important;
+}
+
+.info-box-text {
+  color: var(--gv-muted) !important;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Tabelas ─────────────────────────────────────────────── */
+.table thead th {
+  background: var(--gv-surface) !important;
+  color: var(--gv-muted) !important;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--gv-border) !important;
+  font-weight: 600;
+}
+
+.table td {
+  color: var(--gv-text) !important;
+  border-color: var(--gv-border) !important;
+  vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+  background: rgba(99, 102, 241, 0.07) !important;
+}
+
+/* ── Botões ─────────────────────────────────────────────── */
+.btn-primary {
+  background: var(--gv-primary) !important;
+  border-color: var(--gv-primary) !important;
+}
+
+.btn-primary:hover {
+  background: var(--gv-primary-dark) !important;
+}
+
+/* ── Cards / Boxes ───────────────────────────────────────── */
+.card {
+  border: 1px solid var(--gv-border) !important;
+  border-radius: 10px !important;
+  background: var(--gv-surface-el) !important;
+}
+
+.card-header {
+  background: var(--gv-surface) !important;
+  border-bottom: 1px solid var(--gv-border) !important;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.03em;
+}
+
+/* ── Formulários ─────────────────────────────────────────── */
+.form-control,
+.select2-container--bootstrap4 .select2-selection {
+  border: 1px solid var(--gv-border) !important;
+  background: var(--gv-surface) !important;
+  color: var(--gv-text) !important;
+  border-radius: 6px !important;
+}
+
+.form-control:focus {
+  border-color: var(--gv-primary) !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25) !important;
+}
+
+/* ── Badges de status ────────────────────────────────────── */
+.badge-playing   { background: rgba(59,130,246,.25); color: #60a5fa; }
+.badge-completed { background: rgba(34,197,94,.25);  color: #4ade80; }
+.badge-paused    { background: rgba(234,179,8,.25);  color: #facc15; }
+.badge-dropped   { background: rgba(239,68,68,.25);  color: #f87171; }
+.badge-wishlist  { background: rgba(168,85,247,.25); color: #c084fc; }
+.badge-backlog   { background: rgba(148,163,184,.2); color: #cbd5e1; }
+
+/* ── Footer ──────────────────────────────────────────────── */
+.main-footer {
+  background: #0d0f18 !important;
+  border-top: 1px solid var(--gv-border) !important;
+  color: var(--gv-muted) !important;
+  font-size: 0.82rem;
+}
+
+/* ── Breadcrumb ──────────────────────────────────────────── */
+.breadcrumb {
+  background: transparent !important;
+}
+
+.breadcrumb-item a {
+  color: var(--gv-primary) !important;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--gv-surface); }
+::-webkit-scrollbar-thumb { background: var(--gv-primary); border-radius: 4px; }
+
+/* ── Dashboard title ─────────────────────────────────────── */
+.content-header h1 {
+  font-weight: 700;
+  font-size: 1.4rem;
+}
+
+/* ── Paginação ───────────────────────────────────────────── */
+.pagination .page-item.active .page-link {
+  background: var(--gv-primary) !important;
+  border-color: var(--gv-primary) !important;
+}
+
+.pagination .page-link {
+  color: var(--gv-primary) !important;
+}
+
+/* ── Dashboard custom stats ──────────────────────────────── */
+.gv-admin-stat {
+  background: var(--gv-surface-el);
+  border: 1px solid var(--gv-border);
+  border-radius: 10px;
+  padding: 1.2rem 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.18s;
+}
+
+.gv-admin-stat:hover {
+  transform: translateY(-2px);
+}
+
+.gv-admin-stat .icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: rgba(99,102,241,.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: #a5b4fc;
+  flex-shrink: 0;
+}
+
+.gv-admin-stat .value {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--gv-text);
+  line-height: 1;
+}
+
+.gv-admin-stat .label {
+  font-size: 0.75rem;
+  color: var(--gv-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 3px;
+}

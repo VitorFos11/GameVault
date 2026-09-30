@@ -1,0 +1,217 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}Dashboard — GameVault Admin{% endblock %}
+
+{% block content %}
+<div style="padding: 0 0 2rem">
+
+  <!-- HEADER -->
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.75rem">
+    <img src="{% static 'img/logo-icon.svg' %}" alt="" width="40" height="40">
+    <div>
+      <h2 style="font-size:1.4rem;font-weight:700;margin:0;color:#f1f5f9">Painel GameVault</h2>
+      <p style="margin:0;font-size:0.8rem;color:#94a3b8">Visão geral do sistema em tempo real</p>
+    </div>
+  </div>
+
+  <!-- STATS GRID -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem">
+
+    <div class="gv-admin-stat">
+      <div class="icon"><i class="fas fa-gamepad"></i></div>
+      <div>
+        <div class="value">{{ total_jogos }}</div>
+        <div class="label">Total de jogos</div>
+      </div>
+    </div>
+
+    <div class="gv-admin-stat">
+      <div class="icon"><i class="fas fa-users"></i></div>
+      <div>
+        <div class="value">{{ total_usuarios }}</div>
+        <div class="label">Usuários</div>
+      </div>
+    </div>
+
+    <div class="gv-admin-stat">
+      <div class="icon"><i class="fas fa-play-circle"></i></div>
+      <div>
+        <div class="value">{{ jogando }}</div>
+        <div class="label">Jogando agora</div>
+      </div>
+    </div>
+
+    <div class="gv-admin-stat">
+      <div class="icon"><i class="fas fa-check-circle"></i></div>
+      <div>
+        <div class="value">{{ concluidos }}</div>
+        <div class="label">Concluídos</div>
+      </div>
+    </div>
+
+    <div class="gv-admin-stat">
+      <div class="icon"><i class="fas fa-clock"></i></div>
+      <div>
+        <div class="value">{{ total_horas|floatformat:0 }}h</div>
+        <div class="label">Horas jogadas</div>
+      </div>
+    </div>
+
+    <div class="gv-admin-stat">
+      <div class="icon"><i class="fas fa-heart"></i></div>
+      <div>
+        <div class="value">{{ wishlist_total }}</div>
+        <div class="label">Itens na wishlist</div>
+      </div>
+    </div>
+
+    <div class="gv-admin-stat">
+      <div class="icon"><i class="fas fa-trophy"></i></div>
+      <div>
+        <div class="value">{{ conquistas_ok }}/{{ total_conquistas }}</div>
+        <div class="label">Conquistas</div>
+      </div>
+    </div>
+
+    <div class="gv-admin-stat">
+      <div class="icon"><i class="fas fa-bell"></i></div>
+      <div>
+        <div class="value">{{ notificacoes_nao_lidas }}</div>
+        <div class="label">Notif. não lidas</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- GRÁFICOS + DISTRIBUIÇÃO -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.5rem">
+
+    <!-- Gêneros -->
+    <div class="card" style="padding:1rem">
+      <div class="card-header" style="margin:-1rem -1rem 1rem">Top gêneros</div>
+      {% for g in top_generos %}
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;font-size:.85rem">
+        <span style="color:#f1f5f9">{{ g.genero__nome|default:"—" }}</span>
+        <span style="color:#a5b4fc;font-weight:600">{{ g.total }}</span>
+      </div>
+      <div style="height:4px;background:#1a1d28;border-radius:4px;margin-bottom:.75rem">
+        <div style="height:4px;width:{{ g.total|default:1 }}0%;background:#6366f1;border-radius:4px;max-width:100%"></div>
+      </div>
+      {% empty %}
+      <p style="color:#94a3b8;font-size:.85rem">Sem dados</p>
+      {% endfor %}
+    </div>
+
+    <!-- Status -->
+    <div class="card" style="padding:1rem">
+      <div class="card-header" style="margin:-1rem -1rem 1rem">Por status</div>
+      {% for s in por_status %}
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem;font-size:.85rem">
+        <span style="color:#f1f5f9">{{ status_labels|default_if_none:"" }}{{ s.status }}</span>
+        <span style="background:rgba(99,102,241,.2);color:#a5b4fc;border-radius:99px;padding:1px 8px;font-weight:600;font-size:.78rem">{{ s.total }}</span>
+      </div>
+      {% empty %}
+      <p style="color:#94a3b8;font-size:.85rem">Sem dados</p>
+      {% endfor %}
+    </div>
+
+    <!-- Avaliações + sessões -->
+    <div class="card" style="padding:1rem">
+      <div class="card-header" style="margin:-1rem -1rem 1rem">Métricas gerais</div>
+      <div style="display:flex;flex-direction:column;gap:.75rem;margin-top:.5rem">
+        <div style="font-size:.85rem">
+          <div style="color:#94a3b8;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em">Média de avaliações</div>
+          <div style="font-size:1.4rem;font-weight:700;color:#f1f5f9">
+            {% if media_avaliacao %}{{ media_avaliacao|floatformat:1 }} / 5{% else %}—{% endif %}
+          </div>
+        </div>
+        <div style="height:1px;background:rgba(148,163,184,.15)"></div>
+        <div style="font-size:.85rem">
+          <div style="color:#94a3b8;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em">Sessões este mês</div>
+          <div style="font-size:1.4rem;font-weight:700;color:#f1f5f9">{{ sessoes_mes }}</div>
+        </div>
+        <div style="height:1px;background:rgba(148,163,184,.15)"></div>
+        <div style="font-size:.85rem">
+          <div style="color:#94a3b8;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em">Plataformas cadastradas</div>
+          <div style="font-size:1.4rem;font-weight:700;color:#f1f5f9">{{ total_plataformas }}</div>
+        </div>
+        <div style="height:1px;background:rgba(148,163,184,.15)"></div>
+        <div style="font-size:.85rem">
+          <div style="color:#94a3b8;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em">Backlog total</div>
+          <div style="font-size:1.4rem;font-weight:700;color:#f1f5f9">{{ backlog }}</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JOGOS RECENTES -->
+  <div class="card">
+    <div class="card-header">
+      Jogos cadastrados recentemente
+      <a href="{% url 'admin:jogos_jogo_changelist' %}" style="float:right;font-size:.8rem;color:#a5b4fc">Ver todos →</a>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="table table-hover" style="margin:0">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th>Usuário</th>
+            <th>Status</th>
+            <th>Plataforma</th>
+            <th>Horas</th>
+            <th>Nota</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for jogo in jogos_recentes %}
+          <tr>
+            <td style="font-weight:600">{{ jogo.nome }}</td>
+            <td style="color:#94a3b8">{{ jogo.usuario|default:"—" }}</td>
+            <td>
+              <span style="border-radius:99px;padding:2px 10px;font-size:.72rem;font-weight:700;
+                           background:rgba(99,102,241,.15);color:#a5b4fc">
+                {{ jogo.get_status_display }}
+              </span>
+            </td>
+            <td style="color:#94a3b8">{{ jogo.nome_plataforma|default:"—" }}</td>
+            <td style="color:#22d3ee">{{ jogo.horas_jogadas|floatformat:0 }}h</td>
+            <td style="color:#f1f5f9">
+              {% if jogo.avaliacao_pessoal %}★ {{ jogo.avaliacao_pessoal }}{% else %}—{% endif %}
+            </td>
+            <td>
+              <a href="{% url 'admin:jogos_jogo_change' jogo.pk %}"
+                 style="color:#a5b4fc;font-size:.8rem">Editar</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:2rem">Nenhum jogo cadastrado.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- LINKS RÁPIDOS -->
+  <div style="display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1rem">
+    <a href="{% url 'admin:jogos_jogo_add' %}" class="btn btn-primary btn-sm">
+      <i class="fas fa-plus"></i> Novo jogo
+    </a>
+    <a href="{% url 'admin:auth_user_changelist' %}" class="btn btn-secondary btn-sm">
+      <i class="fas fa-users"></i> Usuários
+    </a>
+    <a href="{% url 'admin:jogos_genero_changelist' %}" class="btn btn-secondary btn-sm">
+      <i class="fas fa-tags"></i> Gêneros
+    </a>
+    <a href="{% url 'admin:jogos_plataforma_changelist' %}" class="btn btn-secondary btn-sm">
+      <i class="fas fa-desktop"></i> Plataformas
+    </a>
+    <a href="/" class="btn btn-outline-secondary btn-sm">
+      <i class="fas fa-external-link-alt"></i> Ver site
+    </a>
+  </div>
+
+</div>
+{% endblock %}
