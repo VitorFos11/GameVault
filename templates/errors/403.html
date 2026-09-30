@@ -1,5 +1,16 @@
 {% extends "base.html" %}
 {% block title %}403 — GameVault{% endblock %}
+{% block content %}
+<div class="gv-empty" style="min-height:60vh;display:grid;place-content:center;text-align:center;gap:1rem">
+  <h1>Acesso negado</h1>
+  <p class="meta">Você não possui permissão para acessar esta área.</p>
+  <a href="{% url 'dashboard' %}" class="gv-btn gv-btn-primary">Voltar ao dashboard</a>
+</div>
+{% endblock %}
 {% block content_public %}
-<div class="gv-empty" style="min-height:80vh;display:grid;place-content:center"><h1>Acesso negado</h1><a href="{% url 'dashboard' %}" class="gv-btn gv-btn-primary">Dashboard</a></div>
+<div class="gv-empty" style="min-height:80vh;display:grid;place-content:center;text-align:center;gap:1rem">
+  <h1>Acesso negado</h1>
+  <p class="meta">Você não possui permissão para acessar esta área.</p>
+  <a href="{% url 'accounts:login' %}" class="gv-btn gv-btn-primary">Entrar</a>
+</div>
 {% endblock %}

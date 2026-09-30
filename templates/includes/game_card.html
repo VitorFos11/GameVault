@@ -5,18 +5,24 @@
     {% else %}
     <div class="cover-placeholder" aria-hidden="true">🎮</div>
     {% endif %}
-    <span class="gv-badge status-{{ jogo.status }} card-badge">{{ jogo.get_status_display }}</span>
+    <span class="gv-badge status-{% if entrada %}{{ entrada.status }}{% else %}{{ jogo.status }}{% endif %} card-badge">{% if entrada %}{{ entrada.get_status_display }}{% else %}{{ jogo.get_status_display }}{% endif %}</span>
   </a>
   <div class="body">
     <h3><a href="{% url 'detalhe_jogo' jogo.id %}">{{ jogo.nome }}</a></h3>
     <p class="meta">{{ jogo.genero.nome }} · {{ jogo.nome_plataforma }}</p>
     <div class="card-foot">
-      {% if jogo.avaliacao_pessoal %}
+      {% if entrada and entrada.avaliacao_pessoal %}
+      <span class="card-rating" aria-label="Nota {{ entrada.avaliacao_pessoal }}">★ {{ entrada.avaliacao_pessoal }}</span>
+      {% elif not entrada and jogo.avaliacao_pessoal %}
       <span class="card-rating" aria-label="Nota {{ jogo.avaliacao_pessoal }}">★ {{ jogo.avaliacao_pessoal }}</span>
       {% endif %}
       <span class="card-price">R$ {{ jogo.preco }}</span>
     </div>
-    {% if jogo.percentual_conclusao %}
+    {% if entrada and entrada.percentual_conclusao %}
+    <div class="gv-progress" aria-label="Progresso {{ entrada.percentual_conclusao }}%">
+      <span style="width: {{ entrada.percentual_conclusao }}%"></span>
+    </div>
+    {% elif not entrada and jogo.percentual_conclusao %}
     <div class="gv-progress" aria-label="Progresso {{ jogo.percentual_conclusao }}%">
       <span style="width: {{ jogo.percentual_conclusao }}%"></span>
     </div>

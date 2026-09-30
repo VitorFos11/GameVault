@@ -3,6 +3,7 @@ from django import forms
 from .models import (
     Avaliacao,
     Conquista,
+    EntradaBiblioteca,
     Genero,
     ItemListaDesejo,
     Jogo,
@@ -40,10 +41,6 @@ class JogoForm(forms.ModelForm):
             "banner",
             "website",
             "tags",
-            "status",
-            "avaliacao_pessoal",
-            "horas_jogadas",
-            "percentual_conclusao",
         ]
         widgets = {
             "data_lancamento": forms.DateInput(attrs={"type": "date"}),
@@ -92,7 +89,7 @@ class PlataformaForm(forms.ModelForm):
 
 class ProgressoJogoForm(forms.ModelForm):
     class Meta:
-        model = Jogo
+        model = EntradaBiblioteca
         fields = ["horas_jogadas", "percentual_conclusao", "status"]
         widgets = {
             "horas_jogadas": forms.NumberInput(attrs={"step": "0.5", "min": "0"}),

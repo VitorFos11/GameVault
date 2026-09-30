@@ -6,7 +6,9 @@
     <h1 class="gv-page-title">{{ titulo }}</h1>
     <p class="gv-page-sub">{{ subtitulo }}</p>
   </div>
+  {% if pode_gerenciar %}
   <a href="{% url criar_url %}" class="gv-btn gv-btn-primary">{{ criar_label }}</a>
+  {% endif %}
 </div>
 
 {% if itens %}
@@ -22,14 +24,20 @@
       {% endif %}
       <p class="gv-catalog-count">{{ item.total_jogos }} jogo{{ item.total_jogos|pluralize:"s" }}</p>
     </div>
+    {% if pode_gerenciar %}
     <div class="gv-detail-actions">
       <a href="{% url editar_url item.id %}" class="gv-btn gv-btn-ghost">Editar</a>
       <a href="{% url excluir_url item.id %}" class="gv-btn gv-btn-danger">Excluir</a>
     </div>
+    {% endif %}
   </article>
   {% endfor %}
 </div>
 {% else %}
+{% if pode_gerenciar %}
 {% include "includes/empty_state.html" with message="Nenhum registro ainda." cta_url=criar_url cta_label=criar_label %}
+{% else %}
+<p class="meta">Nenhum registro cadastrado no catálogo.</p>
+{% endif %}
 {% endif %}
 {% endblock %}

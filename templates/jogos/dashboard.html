@@ -6,7 +6,7 @@
 <div class="gv-page-head">
   <div>
     <h1 class="gv-page-title">Dashboard</h1>
-    <p class="gv-page-sub">Indicadores da biblioteca, calculados direto do banco</p>
+    <p class="gv-page-sub">{% if dashboard_global %}Visão global do catálogo (administrador){% else %}Sua biblioteca pessoal{% endif %}</p>
   </div>
   <a href="{% url 'estatisticas' %}" class="gv-btn gv-btn-ghost">Ver gráficos</a>
 </div>
@@ -101,7 +101,11 @@
     {% endfor %}
   </div>
   {% else %}
-  {% include "includes/empty_state.html" with message="Adicione jogos e avaliações para ver recomendações." cta_url="cadastrar_jogo" cta_label="Adicionar jogo" %}
+  {% if dashboard_global %}
+  {% include "includes/empty_state.html" with message="Cadastre jogos no catálogo para ver recomendações." cta_url="cadastrar_jogo" cta_label="Novo jogo" %}
+  {% else %}
+  {% include "includes/empty_state.html" with message="Explore o catálogo e adicione jogos à biblioteca." cta_url="explorar_jogos" cta_label="Explorar catálogo" %}
+  {% endif %}
   {% endif %}
 </section>
 

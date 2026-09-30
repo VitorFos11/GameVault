@@ -161,6 +161,52 @@ class Jogo(models.Model):
         return self.nome
 
 
+class EntradaBiblioteca(models.Model):
+    """Vínculo usuário ↔ jogo do catálogo (progresso pessoal)."""
+
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="entradas_biblioteca",
+    )
+    jogo = models.ForeignKey(
+        Jogo,
+        on_delete=models.CASCADE,
+        related_name="entradas_biblioteca",
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=StatusJogo.choices,
+        default=StatusJogo.BACKLOG,
+    )
+    horas_jogadas = models.DecimalField(
+        max_digits=8, decimal_places=2, default=0, validators=[MinValueValidator(0)]
+    )
+    percentual_conclusao = models.PositiveSmallIntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+    )
+    avaliacao_pessoal = models.DecimalField(
+        max_digits=3,
+        decimal_places=1,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(5)],
+    )
+    ultimo_jogado = models.DateTimeField(null=True, blank=True)
+    adicionado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = [["usuario", "jogo"]]
+        ordering = ["-adicionado_em"]
+        verbose_name = "Entrada na biblioteca"
+        verbose_name_plural = "Entradas na biblioteca"
+
+    def __str__(self):
+        return f"{self.usuario} — {self.jogo.nome}"
+
+
 class PrioridadeDesejo(models.TextChoices):
     LOW = "low", "Baixa"
     MEDIUM = "medium", "Média"
@@ -231,6 +277,11 @@ class Avaliacao(models.Model):
 
 
 class Conquista(models.Model):
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="conquistas",
+    )
     jogo = models.ForeignKey(
         Jogo,
         on_delete=models.CASCADE,

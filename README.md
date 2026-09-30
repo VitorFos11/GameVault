@@ -7,7 +7,7 @@
 [![CI](https://github.com/VitorFos11/GameVault/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/VitorFos11/GameVault/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
 ![Django](https://img.shields.io/badge/Django-5.2-092E20?logo=django&logoColor=white)
-![Status](https://img.shields.io/badge/status-v2.0-6366f1)
+![Status](https://img.shields.io/badge/status-v2.1-6366f1)
 
 <p align="center">
   <img src="static/img/logo-full.svg" alt="GameVault" width="300">
@@ -19,9 +19,27 @@
 
 ## Sobre
 
-Plataforma **Django** para gerenciar coleção pessoal de jogos: **dashboard** com indicadores do banco, **biblioteca** com busca e filtros, **wishlist**, **avaliações**, **conquistas**, **catálogo** (gêneros e plataformas), **estatísticas** e **perfil**. Interface **dark SaaS** — sidebar, topbar, cards e tema claro/escuro.
+Plataforma **Django** para gerenciar coleção de jogos com **catálogo global** (administrador) e **biblioteca pessoal** (cada usuário): dashboard, **explorar** catálogo, busca e filtros, wishlist, avaliações, conquistas, gêneros/plataformas (leitura para usuários), estatísticas e perfil. Interface **dark SaaS** — sidebar, topbar, cards e tema claro/escuro.
 
-**Entrega acadêmica:** quatro tabelas de domínio (`Gênero`, `Plataforma`, `Jogo`, `Avaliação`), relações **1:N** e **N:N**, **CRUD** completo e conferência no **`db.sqlite3`** (DBeaver ou [DB Browser for SQLite](docs/DB_BROWSER_SQLITE.md)).
+**Entrega acadêmica:** domínio com `Gênero`, `Plataforma`, `Jogo`, `Avaliação` e **`EntradaBiblioteca`** (usuário ↔ jogo), relações **1:N** e **N:N**, CRUD do catálogo restrito a **staff**, conferência no **`db.sqlite3`** (DBeaver ou [DB Browser for SQLite](docs/DB_BROWSER_SQLITE.md)).
+
+---
+
+## Papéis e permissões
+
+O projeto usa **`is_staff`** do Django (sem papéis customizados).
+
+| | **Administrador** (`is_staff=True`) | **Usuário normal** |
+|---|-------------------------------------|---------------------|
+| Catálogo de jogos | Criar, editar, excluir (`/novo/`, etc.) | Só **visualizar** em `/explorar/` |
+| Gêneros / plataformas | CRUD completo | **Listagem** (somente leitura) |
+| Biblioteca pessoal | Pode usar como qualquer usuário | **Explorar** → **+ Biblioteca**; progresso, notas, sessões |
+| Dashboard | Métricas **globais** do catálogo | Métricas da **própria** biblioteca |
+| `/admin/` | Sim | Não (403) |
+
+A proteção está no **backend** (`exigir_staff` nas views); botões administrativos também somem na interface para quem não é staff.
+
+Para tornar alguém administrador: Django Admin → **Usuários** → marque **Status de equipe (staff)** ou use `createsuperuser` (superusuário já é staff).
 
 ---
 
@@ -29,20 +47,22 @@ Plataforma **Django** para gerenciar coleção pessoal de jogos: **dashboard** c
 
 | Etapa | O que você faz |
 |-------|----------------|
-| **1. Conta** | Registro em `/conta/registro/` — biblioteca filtrada por usuário (+ jogos demo compartilhados sem dono) |
-| **1b. Sessão** | **Sair** (sidebar, topbar ou Configurações) → volta ao login para entrar com outra conta |
-| **2. Catálogo** | CRUD de gêneros e plataformas (menu lateral) |
-| **3. Biblioteca** | **+ Jogo**: cadastro, capa, status, plataformas |
-| **4. Dashboard** | Totais e distribuições calculados pelo ORM |
-| **5. Detalhe** | Clique no jogo na biblioteca — avaliações, progresso, conquistas, wishlist |
-| **6. Apresentação** | Cadastre no site → atualize `db.sqlite3` no DBeaver ou DB Browser |
-| **7. Extra** | Admin Jazzmin · PostgreSQL opcional (`.env`) |
+| **1. Conta** | Registro em `/conta/registro/` ou login |
+| **1b. Sessão** | **Sair** (sidebar, topbar ou Configurações) → `/conta/login/` |
+| **2. Explorar** | `/explorar/` — catálogo global; **+ Biblioteca** adiciona o jogo à sua coleção |
+| **3. Biblioteca** | `/biblioteca/` — só jogos que **você** adicionou; filtros e progresso pessoal |
+| **4. Admin catálogo** | Staff: **+ Jogo**, gêneros/plataformas, `/admin/` Jazzmin |
+| **5. Detalhe** | Ficha do jogo; progresso/avaliação exigem entrada na biblioteca |
+| **6. Apresentação** | Cadastre no site → inspecione `db.sqlite3` no DBeaver ou DB Browser |
+| **7. Extra** | PostgreSQL opcional (`.env`) |
+
+Cadastro de jogos no catálogo é **manual** (sem API externa).
 
 ---
 
 ## As telas
 
-Interface **v2** (sidebar, dashboard acadêmico, biblioteca em grade, catálogo e estatísticas).
+Interface **v2** (sidebar, dashboard, biblioteca, explorar, catálogo e estatísticas).
 
 | | |
 |---|---|
@@ -51,7 +71,7 @@ Interface **v2** (sidebar, dashboard acadêmico, biblioteca em grade, catálogo 
 | ![Dashboard](docs/assets/telas/04-dashboard.png) | ![Biblioteca](docs/assets/telas/05-biblioteca.png) |
 | **Dashboard** | **Biblioteca** |
 | ![Detalhe](docs/assets/telas/06-detalhe.png) | ![Novo jogo](docs/assets/telas/07-formulario.png) |
-| **Detalhe do jogo** | **Cadastro de jogo** |
+| **Detalhe do jogo** | **Cadastro de jogo (staff)** |
 | ![Estatísticas](docs/assets/telas/10-estatisticas.png) | ![Catálogo gêneros](docs/assets/telas/11-catalogo-generos.png) |
 | **Estatísticas** | **Catálogo — gêneros** |
 | ![Wishlist](docs/assets/telas/08-wishlist.png) | ![Perfil](docs/assets/telas/09-perfil.png) |
@@ -89,13 +109,13 @@ python -m venv venv
 pip install -r requirements.txt
 copy .env.example .env
 python manage.py migrate
-python manage.py createsuperuser   # opcional
+python manage.py createsuperuser   # administrador (staff + superuser)
 python manage.py runserver
 ```
 
 Abra **http://127.0.0.1:8000/** → criar conta ou login.
 
-**Conta demo (opcional):** `demo` / `demo123456` — o script `scripts/capture_screenshots.py` cria essa conta se ela não existir.
+**Conta demo (opcional):** `demo` / `demo123456` — criada pelo script `scripts/capture_screenshots.py` se não existir (usuário comum, não staff).
 
 ### Linux / macOS
 
@@ -105,6 +125,7 @@ python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
 python manage.py migrate
+python manage.py createsuperuser
 python manage.py runserver
 ```
 
@@ -115,6 +136,7 @@ python manage.py runserver
 | `No module named 'django'` | Ative o `venv` e `pip install -r requirements.txt` |
 | SSL no pip (Windows) | `--trusted-host pypi.org --trusted-host files.pythonhosted.org` |
 | Porta ocupada | `python manage.py runserver 8080` |
+| Não consigo cadastrar jogo | Precisa de usuário **staff** ou acesse `/explorar/` como usuário comum |
 | DBeaver: erro de DLL (Windows) | [DATABASE_DBEAVER.md](docs/DATABASE_DBEAVER.md) ou [DB_BROWSER_SQLITE.md](docs/DB_BROWSER_SQLITE.md) |
 
 ---
@@ -124,18 +146,21 @@ python manage.py runserver
 | Página | URL |
 |--------|-----|
 | Landing | `/` |
-| Registro / Login / Sair | `/conta/registro/` · `/conta/login/` · sair (POST em `/conta/logout/`) |
+| Registro / Login / Sair | `/conta/registro/` · `/conta/login/` · POST `/conta/logout/` |
 | Dashboard | `/dashboard/` |
-| Biblioteca | `/biblioteca/` |
+| Explorar catálogo | `/explorar/` |
+| Minha biblioteca | `/biblioteca/` |
+| Adicionar à biblioteca | POST `/jogo/<id>/biblioteca/adicionar/` |
 | Wishlist | `/lista-desejos/` |
 | Estatísticas | `/estatisticas/` |
 | Configurações | `/configuracoes/` |
-| Gêneros | `/generos/` |
-| Plataformas | `/plataformas/` |
+| Gêneros (lista) | `/generos/` |
+| Plataformas (lista) | `/plataformas/` |
 | Conquistas | `/conquistas/` |
-| Novo jogo | `/novo/` |
+| Novo jogo (**staff**) | `/novo/` |
+| Editar / excluir jogo (**staff**) | `/editar/<id>/` · `/excluir/<id>/` |
 | Perfil | `/conta/perfil/` |
-| Admin | `/admin/` |
+| Admin (**staff**) | `/admin/` |
 
 ---
 
@@ -149,8 +174,6 @@ Arquivo [.env.example](.env.example):
 | `DEBUG` | `True` em dev |
 | `DATABASE_URL` | PostgreSQL; vazio = SQLite (`db.sqlite3`) |
 | `GAMES_PER_PAGE` | Paginação (padrão `12`) |
-
-Cadastro de jogos é **manual** (sem API externa).
 
 ---
 
@@ -167,12 +190,13 @@ Documentação: [DATABASE_DBEAVER.md](docs/DATABASE_DBEAVER.md) · [DB_BROWSER_S
 
 **PostgreSQL (opcional):** `docker compose up -d db` + `DATABASE_URL=postgres://gamevault:gamevault@localhost:5432/gamevault` + `migrate`.
 
-| Modelo | Tabela SQLite | Relação |
-|--------|---------------|---------|
-| Gênero | `jogos_genero` | 1:N → jogo |
-| Plataforma | `jogos_plataforma` | N:N com jogo |
-| Jogo | `jogos_jogo` | 1:N → avaliação |
-| Avaliação | `jogos_avaliacao` | FK jogo + usuário |
+| Modelo | Tabela SQLite | Papel |
+|--------|---------------|--------|
+| Gênero | `jogos_genero` | Catálogo (CRUD staff) |
+| Plataforma | `jogos_plataforma` | Catálogo N:N com jogo |
+| Jogo | `jogos_jogo` | **Catálogo global** (`usuario` nulo) |
+| EntradaBiblioteca | `jogos_entradabiblioteca` | Biblioteca pessoal (status, horas, %) |
+| Avaliação | `jogos_avaliacao` | Nota/comentário por usuário e jogo |
 
 ---
 
@@ -182,15 +206,17 @@ Documentação: [DATABASE_DBEAVER.md](docs/DATABASE_DBEAVER.md) · [DB_BROWSER_S
 python manage.py test jogos accounts
 ```
 
+Inclui cenários de **staff** vs **usuário** e bloqueio de URLs administrativas (403).
+
 ---
 
 ## Estrutura
 
 ```
 gamevault/     settings, URLs, admin Jazzmin
-accounts/      auth, perfil, registro
-jogos/         models, views, forms, stats
-templates/     layout v2, catálogo, dashboard
+accounts/      auth, perfil, registro, logout
+jogos/         models, views, permissions, stats, migrations
+templates/     layout v2, explorar, biblioteca, dashboard
 static/        CSS, logo, JS
 docs/          DBeaver, capturas, SQL de demo
 scripts/       list_db_tables, capture_screenshots, setup DBeaver
@@ -201,7 +227,7 @@ db.sqlite3     banco demo (SQLite)
 
 ## Créditos
 
-**GameVault v2.0** — 2026  
+**GameVault v2.1** — 2026  
 
 **Vitor Faria de Oliveira e Silva** · **Rafael Junqueira de Souza**
 

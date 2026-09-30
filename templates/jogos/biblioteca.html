@@ -6,9 +6,10 @@
 <div class="gv-page-head">
   <div>
     <h1 class="gv-page-title">Minha biblioteca</h1>
-    <p class="gv-page-sub">{{ total_filtrado }} jogo(s) encontrado(s)</p>
+    <p class="gv-page-sub">{{ total_filtrado }} jogo(s) na sua biblioteca</p>
   </div>
   <div class="gv-detail-actions" style="margin:0">
+    <a href="{% url 'explorar_jogos' %}" class="gv-btn gv-btn-primary">Explorar catálogo</a>
     <a href="?{% for k,v in request.GET.items %}{% if k != 'view' %}{{ k }}={{ v }}&{% endif %}{% endfor %}view=grid" class="gv-btn gv-btn-ghost">Grade</a>
     <a href="?{% for k,v in request.GET.items %}{% if k != 'view' %}{{ k }}={{ v }}&{% endif %}{% endfor %}view=list" class="gv-btn gv-btn-ghost">Lista</a>
   </div>
@@ -72,30 +73,30 @@
   </div>
 </form>
 
-{% if jogos %}
+{% if entradas %}
   {% if view_mode == 'list' %}
   <div class="gv-game-list">
-    {% for jogo in jogos %}
+    {% for entrada in entradas %}
     <div class="gv-list-row">
-      {% if jogo.capa %}<img src="{{ jogo.capa.url }}" alt="">{% else %}<div class="cover-placeholder" style="width:80px;height:100px">🎮</div>{% endif %}
+      {% if entrada.jogo.capa %}<img src="{{ entrada.jogo.capa.url }}" alt="">{% else %}<div class="cover-placeholder" style="width:80px;height:100px">🎮</div>{% endif %}
       <div>
-        <strong><a href="{% url 'detalhe_jogo' jogo.id %}">{{ jogo.nome }}</a></strong>
-        <p class="meta">{{ jogo.genero.nome }} · {{ jogo.nome_plataforma }}</p>
-        <span class="gv-badge status-{{ jogo.status }}">{{ jogo.get_status_display }}</span>
+        <strong><a href="{% url 'detalhe_jogo' entrada.jogo.id %}">{{ entrada.jogo.nome }}</a></strong>
+        <p class="meta">{{ entrada.jogo.genero.nome }} · {{ entrada.jogo.nome_plataforma }}</p>
+        <span class="gv-badge status-{{ entrada.status }}">{{ entrada.get_status_display }}</span>
       </div>
-      <a href="{% url 'detalhe_jogo' jogo.id %}" class="gv-btn gv-btn-ghost">Abrir</a>
+      <a href="{% url 'detalhe_jogo' entrada.jogo.id %}" class="gv-btn gv-btn-ghost">Abrir</a>
     </div>
     {% endfor %}
   </div>
   {% else %}
   <div class="gv-game-grid">
-    {% for jogo in jogos %}
-      {% include "includes/game_card.html" with jogo=jogo %}
+    {% for entrada in entradas %}
+      {% include "includes/game_card.html" with jogo=entrada.jogo entrada=entrada %}
     {% endfor %}
   </div>
   {% endif %}
-  {% include "includes/pagination.html" with page_obj=jogos %}
+  {% include "includes/pagination.html" with page_obj=entradas %}
 {% else %}
-  {% include "includes/empty_state.html" with message="Sua biblioteca está vazia. Comece a montar seu GameVault." cta_url="cadastrar_jogo" cta_label="Adicionar primeiro jogo" %}
+  {% include "includes/empty_state.html" with message="Sua biblioteca está vazia. Explore o catálogo e adicione jogos." cta_url="explorar_jogos" cta_label="Explorar catálogo" %}
 {% endif %}
 {% endblock %}

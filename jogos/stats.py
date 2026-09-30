@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.db.models import Avg, Count, Max, Min, Sum
 from django.db.models.functions import ExtractYear
 
-from .models import Avaliacao, Genero, ItemListaDesejo, Plataforma, StatusJogo
+from .models import Avaliacao, Genero, ItemListaDesejo, Jogo, Plataforma, StatusJogo
 
 
 def estatisticas_dashboard(queryset):
@@ -16,6 +16,25 @@ def estatisticas_dashboard(queryset):
     )
     horas = queryset.aggregate(s=Sum("horas_jogadas"))["s"] or Decimal("0")
 
+    return {
+        "total_jogos": total,
+        "jogando": por_status.get(StatusJogo.PLAYING, 0),
+        "concluidos": por_status.get(StatusJogo.COMPLETED, 0)
+        + por_status.get(StatusJogo.MASTERED, 0),
+        "backlog": por_status.get(StatusJogo.BACKLOG, 0),
+        "wishlist_status": por_status.get(StatusJogo.WISHLIST, 0),
+        "horas_jogadas": horas,
+    }
+
+
+def estatisticas_dashboard_entradas(entradas):
+    total = entradas.count()
+    por_status = dict(
+        entradas.values("status")
+        .annotate(total=Count("id"))
+        .values_list("status", "total")
+    )
+    horas = entradas.aggregate(s=Sum("horas_jogadas"))["s"] or Decimal("0")
     return {
         "total_jogos": total,
         "jogando": por_status.get(StatusJogo.PLAYING, 0),
@@ -98,14 +117,18 @@ def dados_graficos(queryset, user):
     }
 
 
-def indicadores_academicos(queryset):
+def indicadores_academicos(queryset, *, global_catalogo=False):
     """Indicadores do dashboard a partir do banco, via ORM."""
     precos = queryset.aggregate(
         media=Avg("preco"),
         maior=Max("preco"),
         menor=Min("preco"),
     )
-    avaliacoes = Avaliacao.objects.filter(jogo__in=queryset)
+    avaliacoes = (
+        Avaliacao.objects.all()
+        if global_catalogo
+        else Avaliacao.objects.filter(jogo__in=queryset)
+    )
     por_genero = list(
         queryset.values("genero__nome")
         .annotate(total=Count("id"))
@@ -116,9 +139,21 @@ def indicadores_academicos(queryset):
         .annotate(total=Count("id", distinct=True))
         .order_by("-total", "plataformas__nome")
     )
+    if global_catalogo:
+        total_generos = Genero.objects.count()
+        total_plataformas = Plataforma.objects.count()
+    else:
+        total_generos = queryset.values("genero_id").distinct().count()
+        total_plataformas = (
+            queryset.filter(plataformas__isnull=False)
+            .values("plataformas")
+            .distinct()
+            .count()
+        )
+
     return {
-        "total_generos": Genero.objects.count(),
-        "total_plataformas": Plataforma.objects.count(),
+        "total_generos": total_generos,
+        "total_plataformas": total_plataformas,
         "total_avaliacoes": avaliacoes.count(),
         "preco_medio": precos["media"],
         "preco_maior": precos["maior"],
@@ -129,7 +164,27 @@ def indicadores_academicos(queryset):
     }
 
 
-def recomendacoes_para_usuario(queryset, limite=6):
+def recomendacoes_para_usuario(queryset, limite=6, entradas=None):
+    if entradas is not None:
+        favoritos = entradas.exclude(avaliacao_pessoal__isnull=True).order_by(
+            "-avaliacao_pessoal"
+        )[:3]
+        genero_ids = list(
+            favoritos.values_list("jogo__genero_id", flat=True)
+        )
+        if not genero_ids:
+            genero_ids = list(
+                entradas.values_list("jogo__genero_id", flat=True)[:3]
+            )
+        concluidos = entradas.filter(
+            status__in=[StatusJogo.COMPLETED, StatusJogo.MASTERED]
+        ).values_list("jogo_id", flat=True)
+        if not genero_ids:
+            return queryset.none()
+        return queryset.filter(genero_id__in=genero_ids).exclude(
+            pk__in=concluidos
+        ).distinct()[:limite]
+
     favoritos = queryset.exclude(avaliacao_pessoal__isnull=True).order_by(
         "-avaliacao_pessoal"
     )[:3]
@@ -143,3 +198,38 @@ def recomendacoes_para_usuario(queryset, limite=6):
         .exclude(status__in=[StatusJogo.COMPLETED, StatusJogo.MASTERED])
         .distinct()[:limite]
     )
+
+
+def dados_graficos_entradas(entradas, user):
+    jogo_ids = entradas.values_list("jogo_id", flat=True)
+    queryset = Jogo.objects.filter(pk__in=jogo_ids)
+    base = dados_graficos(queryset, user)
+    status_map = dict(StatusJogo.choices)
+    status_data = list(
+        entradas.values("status").annotate(total=Count("id")).order_by("-total")
+    )
+    base["chart_status"] = json.dumps(
+        {
+            "labels": [status_map.get(s["status"], s["status"]) for s in status_data],
+            "values": [s["total"] for s in status_data],
+        }
+    )
+    concluidos = entradas.filter(
+        status__in=[StatusJogo.COMPLETED, StatusJogo.MASTERED]
+    ).count()
+    total = entradas.count() or 1
+    base["taxa_conclusao"] = round((concluidos / total) * 100, 1)
+    base["media_avaliacao"] = entradas.aggregate(m=Avg("avaliacao_pessoal"))["m"]
+    rating = list(
+        entradas.exclude(avaliacao_pessoal__isnull=True)
+        .values("avaliacao_pessoal")
+        .annotate(total=Count("id"))
+        .order_by("avaliacao_pessoal")
+    )
+    base["chart_ratings"] = json.dumps(
+        {
+            "labels": [str(int(a["avaliacao_pessoal"])) for a in rating],
+            "values": [a["total"] for a in rating],
+        }
+    )
+    return base

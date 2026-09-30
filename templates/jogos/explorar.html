@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Explorar catálogo — GameVault{% endblock %}
+
+{% block content %}
+<div class="gv-page-head">
+  <div>
+    <h1 class="gv-page-title">Explorar catálogo</h1>
+    <p class="gv-page-sub">{{ total_filtrado }} jogo(s) no catálogo global</p>
+  </div>
+  <a href="{% url 'biblioteca' %}" class="gv-btn gv-btn-ghost">Minha biblioteca</a>
+</div>
+
+<form class="gv-filters" method="get">
+  <div class="gv-filter-field gv-filter-grow">
+    <label for="filtro-buscar">Busca</label>
+    <input id="filtro-buscar" type="search" name="buscar" placeholder="Nome, estúdio ou tag" value="{{ busca }}">
+  </div>
+  <div class="gv-filter-field">
+    <label for="filtro-genero">Gênero</label>
+    <select id="filtro-genero" name="genero">
+      <option value="">Todos</option>
+      {% for g in generos %}
+      <option value="{{ g.slug }}" {% if filtros.genero == g.slug %}selected{% endif %}>{{ g.nome }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="gv-filter-field">
+    <label for="filtro-plataforma">Plataforma</label>
+    <select id="filtro-plataforma" name="plataforma">
+      <option value="">Todas</option>
+      {% for p in plataformas %}
+      <option value="{{ p.slug }}" {% if filtros.plataforma == p.slug %}selected{% endif %}>{{ p.nome }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="gv-filter-actions">
+    <button type="submit" class="gv-btn gv-btn-primary">Filtrar</button>
+    <a href="{% url 'explorar_jogos' %}" class="gv-btn gv-btn-ghost">Limpar</a>
+  </div>
+</form>
+
+{% if jogos %}
+<div class="gv-game-grid">
+  {% for jogo in jogos %}
+  <article class="gv-game-card">
+    <a href="{% url 'detalhe_jogo' jogo.id %}" class="cover-link">
+      {% if jogo.capa %}<img src="{{ jogo.capa.url }}" alt="" class="cover" loading="lazy">{% else %}<div class="cover-placeholder">🎮</div>{% endif %}
+    </a>
+    <div class="body">
+      <h3><a href="{% url 'detalhe_jogo' jogo.id %}">{{ jogo.nome }}</a></h3>
+      <p class="meta">{{ jogo.genero.nome }} · {{ jogo.nome_plataforma }}</p>
+      <div class="card-foot">
+        {% if jogo.id in ids_na_biblioteca %}
+        <span class="meta">Na sua biblioteca</span>
+        {% else %}
+        <form method="post" action="{% url 'adicionar_biblioteca' jogo.id %}">
+          {% csrf_token %}
+          <button type="submit" class="gv-btn gv-btn-primary" style="font-size:0.8rem;padding:0.35rem 0.65rem">+ Biblioteca</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% include "includes/pagination.html" with page_obj=jogos %}
+{% else %}
+{% include "includes/empty_state.html" with message="Nenhum jogo no catálogo." cta_url="explorar_jogos" cta_label="Limpar filtros" %}
+{% endif %}
+{% endblock %}

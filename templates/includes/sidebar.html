@@ -11,10 +11,21 @@
     <a href="{% url 'biblioteca' %}" class="{% if request.resolver_match.url_name == 'biblioteca' or request.resolver_match.url_name == 'lista_jogos' %}active{% endif %}">
       <span class="gv-nav-icon" aria-hidden="true">▤</span><span class="nav-label">Biblioteca</span>
     </a>
+    <a href="{% url 'explorar_jogos' %}" class="{% if request.resolver_match.url_name == 'explorar_jogos' %}active{% endif %}">
+      <span class="gv-nav-icon" aria-hidden="true">⌕</span><span class="nav-label">Explorar</span>
+    </a>
     <a href="{% url 'lista_desejos' %}" class="{% if 'desejo' in request.resolver_match.url_name or request.resolver_match.url_name == 'lista_desejos' %}active{% endif %}">
       <span class="gv-nav-icon" aria-hidden="true">♡</span><span class="nav-label">Wishlist</span>
     </a>
-    <p class="gv-nav-label">Catálogo</p>
+    <p class="gv-nav-label">Catálogo{% if user.is_staff %} · Admin{% endif %}</p>
+    {% if user.is_staff %}
+    <a href="{% url 'cadastrar_jogo' %}" class="{% if request.resolver_match.url_name == 'cadastrar_jogo' %}active{% endif %}">
+      <span class="gv-nav-icon" aria-hidden="true">+</span><span class="nav-label">Novo jogo</span>
+    </a>
+    <a href="/admin/" target="_blank" rel="noopener">
+      <span class="gv-nav-icon" aria-hidden="true">⚙</span><span class="nav-label">Django Admin</span>
+    </a>
+    {% endif %}
     <a href="{% url 'lista_generos' %}" class="{% if 'genero' in request.resolver_match.url_name %}active{% endif %}">
       <span class="gv-nav-icon" aria-hidden="true">◈</span><span class="nav-label">Gêneros</span>
     </a>

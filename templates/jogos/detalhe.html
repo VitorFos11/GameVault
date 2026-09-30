@@ -15,11 +15,19 @@
   <div>
     <h1 class="gv-page-title">{{ jogo.nome }}</h1>
     <p class="gv-page-sub">{{ jogo.desenvolvedora }} · {{ jogo.nome_plataforma }} · {{ jogo.genero.nome }}</p>
-    <span class="gv-badge status-{{ jogo.status }}">{{ jogo.get_status_display }}</span>
+    {% if entrada %}
+    <span class="gv-badge status-{{ entrada.status }}">{{ entrada.get_status_display }}</span>
+    {% endif %}
 
     <div class="gv-detail-actions">
-      <a href="{% url 'editar_jogo' jogo.id %}" class="gv-btn gv-btn-primary">Editar</a>
-      <button type="button" class="gv-btn gv-btn-danger" data-modal-open="modal-excluir">Excluir</button>
+      {% if user.is_staff %}
+      <a href="{% url 'editar_jogo' jogo.id %}" class="gv-btn gv-btn-primary">Editar catálogo</a>
+      <button type="button" class="gv-btn gv-btn-danger" data-modal-open="modal-excluir">Excluir do catálogo</button>
+      {% endif %}
+      {% if not entrada %}
+      <form method="post" action="{% url 'adicionar_biblioteca' jogo.id %}">{% csrf_token %}<button class="gv-btn gv-btn-primary">+ Minha biblioteca</button></form>
+      {% endif %}
+      {% if entrada %}
       {% if na_lista_desejo %}
       <form method="post" action="{% url 'remover_lista_desejo' jogo.id %}">{% csrf_token %}<button class="gv-btn gv-btn-ghost">Remover wishlist</button></form>
       {% else %}
@@ -28,10 +36,11 @@
       <form method="post" action="{% url 'alterar_status_rapido' jogo.id %}">{% csrf_token %}
         <select name="status" class="gv-input" style="width:auto" onchange="this.form.submit()" aria-label="Alterar status">
           {% for val, label in status_choices %}
-          <option value="{{ val }}" {% if jogo.status == val %}selected{% endif %}>{{ label }}</option>
+          <option value="{{ val }}" {% if entrada.status == val %}selected{% endif %}>{{ label }}</option>
           {% endfor %}
         </select>
       </form>
+      {% endif %}
     </div>
 
     <div class="gv-detail-panel">
@@ -61,23 +70,31 @@
         <li class="meta">Nenhuma avaliação ainda.</li>
         {% endfor %}
       </ul>
+      {% if entrada %}
       <h3 class="gv-form-section" style="margin-top:1rem">{% if avaliacao %}Editar sua avaliação{% else %}Nova avaliação{% endif %}</h3>
       <form method="post" action="{% url 'salvar_avaliacao' jogo.id %}" class="gv-form-stack">{% csrf_token %}{{ avaliacao_form.as_p }}<button class="gv-btn gv-btn-primary">Salvar avaliação</button></form>
       {% if avaliacao %}
       <form method="post" action="{% url 'excluir_avaliacao' jogo.id %}" style="margin-top:0.75rem">{% csrf_token %}<button class="gv-btn gv-btn-ghost">Excluir minha avaliação</button></form>
       {% endif %}
+      {% else %}
+      <p class="meta">Adicione o jogo à biblioteca para avaliar.</p>
+      {% endif %}
     </div>
 
+    {% if entrada %}
     <div class="gv-detail-panel">
       <h2>Progresso</h2>
-      <div class="gv-progress" style="height:10px;margin:0.75rem 0"><span style="width:{{ jogo.percentual_conclusao }}%"></span></div>
-      <p>{{ jogo.percentual_conclusao }}% concluído · {{ jogo.horas_jogadas|floatformat:1 }}h jogadas</p>
+      <div class="gv-progress" style="height:10px;margin:0.75rem 0"><span style="width:{{ entrada.percentual_conclusao }}%"></span></div>
+      <p>{{ entrada.percentual_conclusao }}% concluído · {{ entrada.horas_jogadas|floatformat:1 }}h jogadas</p>
+      {% if progresso_form %}
       <form method="post" action="{% url 'atualizar_progresso' jogo.id %}" class="gv-form-grid" style="margin-top:1rem">
         {% csrf_token %}
         {{ progresso_form.as_p }}
         <button type="submit" class="gv-btn gv-btn-primary">Atualizar progresso</button>
       </form>
+      {% endif %}
     </div>
+    {% endif %}
 
     <div class="gv-detail-panel">
       <h2>Descrição</h2>
@@ -89,22 +106,27 @@
       <h2>Conquistas ({{ conquistas_ok }}/{{ total_conquistas }})</h2>
       <div class="gv-progress"><span style="width:{{ pct_conquistas }}%"></span></div>
       <ul>
-        {% for c in jogo.conquistas.all %}
+        {% for c in conquistas %}
         <li>{% if c.concluida %}✓{% else %}○{% endif %} {{ c.nome }}</li>
         {% empty %}
         <li class="meta">Nenhuma conquista cadastrada.</li>
         {% endfor %}
       </ul>
+      {% if entrada %}
       <form method="post" action="{% url 'adicionar_conquista' jogo.id %}" style="margin-top:1rem">{% csrf_token %}{{ conquista_form.as_p }}<button class="gv-btn gv-btn-ghost">Adicionar</button></form>
+      {% endif %}
     </div>
 
+    {% if entrada %}
     <div class="gv-detail-panel">
       <h2>Registrar sessão</h2>
       <form method="post" action="{% url 'registrar_sessao' jogo.id %}">{% csrf_token %}{{ sessao_form.as_p }}<button class="gv-btn gv-btn-ghost">Registrar</button></form>
     </div>
+    {% endif %}
   </div>
 </div>
 
+{% if user.is_staff %}
 <div id="modal-excluir" class="gv-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-excluir-title">
   <div class="gv-modal">
     <h2 id="modal-excluir-title">Excluir jogo?</h2>
@@ -115,4 +137,5 @@
     </div>
   </div>
 </div>
+{% endif %}
 {% endblock %}

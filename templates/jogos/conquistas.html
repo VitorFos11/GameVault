@@ -2,16 +2,16 @@
 {% block title %}Conquistas — GameVault{% endblock %}
 {% block content %}
 <h1 class="gv-page-title">Conquistas</h1>
-{% for jogo in jogos %}
+{% for entrada in entradas %}
 <div class="gv-detail-panel">
-  <h2>{{ jogo.nome }}</h2>
+  <h2>{{ entrada.jogo.nome }}</h2>
   <ul>
-    {% for c in jogo.conquistas.all %}
+    {% for c in entrada.jogo.conquistas.all %}
     <li>{% if c.concluida %}✓{% else %}○{% endif %} {{ c.nome }} — {{ c.descricao }}</li>
     {% empty %}<li class="meta">Sem conquistas.</li>{% endfor %}
   </ul>
 </div>
 {% empty %}
-{% include "includes/empty_state.html" with message="Cadastre conquistas nos detalhes de cada jogo." cta_url="biblioteca" cta_label="Ir à biblioteca" %}
+{% include "includes/empty_state.html" with message="Adicione jogos à biblioteca e registre conquistas nos detalhes." cta_url="explorar_jogos" cta_label="Explorar catálogo" %}
 {% endfor %}
 {% endblock %}

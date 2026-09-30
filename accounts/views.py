@@ -5,7 +5,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.db.models import Avg, Count
 from django.shortcuts import redirect, render
 
-from jogos.permissions import jogos_do_usuario
+from jogos.permissions import jogos_na_biblioteca
 from jogos.stats import estatisticas_dashboard
 
 from .forms import PerfilForm, RegistroForm
@@ -38,7 +38,7 @@ def registro(request):
 @login_required
 def perfil(request):
     perfil_obj = request.user.perfil
-    qs = jogos_do_usuario(request.user)
+    qs = jogos_na_biblioteca(request.user)
     stats = estatisticas_dashboard(qs)
     generos_fav = (
         qs.values("genero__nome")
