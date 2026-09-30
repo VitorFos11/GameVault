@@ -29,3 +29,11 @@ git push --force-with-lease origin main
 Use `--force-with-lease` só quando todos combinarem (reescreve histórico).
 
 O gráfico de contribuidores no GitHub pode levar **algumas horas** para atualizar após o force push.
+
+## Sumir da barra lateral (Contributors)
+
+1. **Branch remota `cursor/*` removida** — ela ainda tinha commits com `Co-authored-by: Cursor` e o GitHub contava o **cursoragent**.
+2. No GitHub: **Insights → Contributors** → clique em **cursoragent** → confira se ainda lista commits. Se **0 commits**, é cache da barra lateral.
+3. **Atualizar cache:** **Settings → General → Default branch** → renomeie `main` para `main-bkp`, salve; renomeie de volta para `main`. Aguarde 10–30 min.
+4. (Opcional) **Settings da sua conta GitHub → Block user** → bloqueie `cursoragent` — some da contagem na sidebar mais rápido em alguns casos.
+5. PRs antigos (#1) podem manter refs internas; isso **não** impede limpar a lista se `main` estiver limpo e branches `cursor/*` apagadas.
