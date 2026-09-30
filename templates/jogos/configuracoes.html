@@ -8,6 +8,12 @@
   <div class="gv-detail-actions">
     <button type="button" class="gv-btn gv-btn-ghost" data-theme-toggle>Alternar claro/escuro</button>
   </div>
-  <p class="meta" style="margin-top:1rem">Conta: <a href="{% url 'accounts:perfil' %}">Editar perfil</a></p>
+  <div class="gv-account-row">
+    <div>
+      <h3>Conta</h3>
+      <p class="meta">Atualize nome, foto e preferências do perfil.</p>
+    </div>
+    <a href="{% url 'accounts:perfil' %}" class="gv-btn gv-btn-primary">Editar perfil</a>
+  </div>
 </section>
 {% endblock %}

@@ -5,9 +5,9 @@ from django.utils.text import slugify
 
 
 class Genero(models.Model):
-    nome = models.CharField(max_length=100)
+    nome = models.CharField(max_length=100, verbose_name="Nome")
     slug = models.SlugField(max_length=120, unique=True, blank=True)
-    descricao = models.TextField(max_length=300, blank=True)
+    descricao = models.TextField(max_length=300, blank=True, verbose_name="Descrição")
 
     class Meta:
         ordering = ["nome"]
@@ -30,8 +30,10 @@ class Genero(models.Model):
 
 
 class Plataforma(models.Model):
-    nome = models.CharField(max_length=100)
+    nome = models.CharField(max_length=100, verbose_name="Nome")
     slug = models.SlugField(max_length=120, unique=True, blank=True)
+    fabricante = models.CharField(max_length=120, blank=True, verbose_name="Fabricante")
+    descricao = models.TextField(max_length=300, blank=True, verbose_name="Descrição")
     icone = models.CharField(max_length=80, blank=True, help_text="Classe ou rótulo curto do ícone")
     criado_em = models.DateTimeField(auto_now_add=True)
 
@@ -77,13 +79,11 @@ class Jogo(models.Model):
     slug = models.SlugField(max_length=220, blank=True)
     desenvolvedora = models.CharField(max_length=150)
     distribuidora = models.CharField(max_length=150)
-    plataforma = models.CharField(max_length=100)
-    plataforma_ref = models.ForeignKey(
+    plataformas = models.ManyToManyField(
         Plataforma,
-        on_delete=models.SET_NULL,
-        null=True,
         blank=True,
         related_name="jogos",
+        verbose_name="Plataformas",
     )
     descricao = models.TextField(max_length=2000)
     preco = models.DecimalField(max_digits=8, decimal_places=2)
@@ -97,6 +97,7 @@ class Jogo(models.Model):
         Genero,
         on_delete=models.PROTECT,
         related_name="jogos",
+        verbose_name="Gênero",
     )
     generos = models.ManyToManyField(
         Genero,
@@ -148,21 +149,13 @@ class Jogo(models.Model):
                 slug = f"{base}-{n}"
                 n += 1
             self.slug = slug
-        if self.plataforma_ref_id and not self.plataforma:
-            self.plataforma = self.plataforma_ref.nome
-        elif self.plataforma and not self.plataforma_ref_id:
-            plat, _ = Plataforma.objects.get_or_create(
-                nome=self.plataforma.strip(),
-                defaults={"slug": slugify(self.plataforma.strip()) or "outra"},
-            )
-            self.plataforma_ref = plat
         super().save(*args, **kwargs)
 
     @property
     def nome_plataforma(self):
-        if self.plataforma_ref_id:
-            return self.plataforma_ref.nome
-        return self.plataforma
+        # .all() aproveita o prefetch_related das listagens; values_list abriria nova query.
+        nomes = [plataforma.nome for plataforma in self.plataformas.all()]
+        return ", ".join(nomes) or "Não informada"
 
     def __str__(self):
         return self.nome
@@ -212,6 +205,7 @@ class Avaliacao(models.Model):
         Jogo,
         on_delete=models.CASCADE,
         related_name="avaliacoes",
+        verbose_name="Jogo",
     )
     usuario = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -219,15 +213,18 @@ class Avaliacao(models.Model):
         related_name="avaliacoes",
     )
     nota = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(5)]
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+        verbose_name="Nota",
     )
-    comentario = models.TextField(blank=True)
-    criado_em = models.DateTimeField(auto_now_add=True)
+    comentario = models.TextField(blank=True, verbose_name="Comentário")
+    criado_em = models.DateTimeField(auto_now_add=True, verbose_name="Data de criação")
     atualizado_em = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = [["usuario", "jogo"]]
         ordering = ["-atualizado_em"]
+        verbose_name = "Avaliação"
+        verbose_name_plural = "Avaliações"
 
     def __str__(self):
         return f"{self.nota}/5 — {self.jogo.nome}"

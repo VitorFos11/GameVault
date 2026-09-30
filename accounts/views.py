@@ -46,8 +46,8 @@ def perfil(request):
         .order_by("-total")[:5]
     )
     plataformas_fav = (
-        qs.values("plataforma_ref__nome", "plataforma")
-        .annotate(total=Count("id"))
+        qs.values("plataformas__nome")
+        .annotate(total=Count("id", distinct=True))
         .order_by("-total")[:5]
     )
     media = qs.aggregate(m=Avg("avaliacao_pessoal"))["m"]

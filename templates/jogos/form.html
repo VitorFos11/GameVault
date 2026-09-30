@@ -4,7 +4,7 @@
 
 {% block content %}
 <h1 class="gv-page-title">{{ titulo|default:"Jogo" }}</h1>
-<p class="gv-page-sub">Preencha as informações do jogo</p>
+<p class="gv-page-sub">Preencha as informações do jogo.</p>
 
 <form method="post" enctype="multipart/form-data" class="gv-detail-panel">
   {% csrf_token %}
@@ -33,12 +33,16 @@
   <div class="gv-form-section">
     <h2>Classificação</h2>
     <div class="gv-form-grid">
-      <div class="gv-form-field">{{ form.genero.label_tag }}{{ form.genero }}</div>
-      <div class="gv-form-field">{{ form.generos.label_tag }}{{ form.generos }}</div>
-      <div class="gv-form-field">{{ form.plataforma_ref.label_tag }}{{ form.plataforma_ref }}</div>
-      <div class="gv-form-field">{{ form.tags.label_tag }}{{ form.tags }}</div>
-      <div class="gv-form-field">{{ form.classificacao.label_tag }}{{ form.classificacao }}</div>
-      <div class="gv-form-field">{{ form.multiplayer.label_tag }}{{ form.multiplayer }}</div>
+      <div class="gv-form-field">{{ form.genero.label_tag }}{{ form.genero }}{{ form.genero.errors }}</div>
+      <div class="gv-form-field">{{ form.classificacao.label_tag }}{{ form.classificacao }}{{ form.classificacao.errors }}</div>
+      <div class="gv-form-field gv-form-field--inline-check">{{ form.multiplayer }}{{ form.multiplayer.label_tag }}{{ form.multiplayer.errors }}</div>
+      <div class="gv-form-field">{{ form.tags.label_tag }}{{ form.tags }}{{ form.tags.errors }}</div>
+      <div class="gv-form-field gv-form-field--span">
+        {{ form.plataformas.label_tag }}
+        {{ form.plataformas }}
+        <span class="meta">{{ form.plataformas.help_text }}</span>
+        {{ form.plataformas.errors }}
+      </div>
     </div>
   </div>
 

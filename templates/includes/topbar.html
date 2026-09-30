@@ -2,6 +2,7 @@
   <button type="button" class="gv-btn gv-btn-ghost" data-sidebar-toggle aria-label="Recolher menu">☰</button>
   <form class="gv-search-global" method="get" action="{% url 'biblioteca' %}" role="search">
     <label for="global-search" class="visually-hidden">Buscar jogos</label>
+    <span class="gv-search-icon" aria-hidden="true">⌕</span>
     <input id="global-search" type="search" name="buscar" placeholder="Buscar jogos..." value="{{ request.GET.buscar|default:'' }}">
   </form>
   <a href="{% url 'notificacoes' %}" class="gv-btn gv-btn-ghost" aria-label="Notificações">

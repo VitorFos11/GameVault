@@ -50,7 +50,7 @@ class GameVaultAdminSite(AdminSite):
                 iniciado_em__date__gte=este_mes_inicio
             ).count(),
             "notificacoes_nao_lidas": Notificacao.objects.filter(lida=False).count(),
-            "jogos_recentes": jogos_qs.select_related("genero", "plataforma_ref", "usuario").order_by("-criado_em")[:8],
+            "jogos_recentes": jogos_qs.select_related("genero", "usuario").prefetch_related("plataformas").order_by("-criado_em")[:8],
             "top_generos": (
                 jogos_qs.values("genero__nome")
                 .annotate(total=Count("id"))

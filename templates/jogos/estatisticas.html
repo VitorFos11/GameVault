@@ -1,2 +1,66 @@
-{% extends "jogos/dashboard.html" %}
+{% extends "base.html" %}
+
 {% block title %}Estatísticas — GameVault{% endblock %}
+
+{% block content %}
+<div class="gv-page-head">
+  <div>
+    <h1 class="gv-page-title">Estatísticas</h1>
+    <p class="gv-page-sub">Distribuição da sua biblioteca em gráficos</p>
+  </div>
+  <a href="{% url 'dashboard' %}" class="gv-btn gv-btn-ghost">Ver dashboard</a>
+</div>
+
+<div class="gv-stat-grid">
+  <div class="gv-stat-card"><div class="value">{{ total_jogos }}</div><div class="label">Total de jogos</div></div>
+  <div class="gv-stat-card"><div class="value">{{ taxa_conclusao }}%</div><div class="label">Taxa de conclusão</div></div>
+  <div class="gv-stat-card"><div class="value">{{ horas_jogadas|floatformat:0 }}h</div><div class="label">Horas jogadas</div></div>
+  <div class="gv-stat-card"><div class="value">{{ wishlist_count }}</div><div class="label">Na wishlist</div></div>
+</div>
+
+{% if total_jogos %}
+<div class="gv-chart-grid">
+  <div class="gv-chart-card"><h3>Plataformas</h3><canvas id="chartPlat" height="200"></canvas></div>
+  <div class="gv-chart-card"><h3>Gêneros</h3><canvas id="chartGen" height="200"></canvas></div>
+  <div class="gv-chart-card"><h3>Status</h3><canvas id="chartStatus" height="200"></canvas></div>
+  <div class="gv-chart-card"><h3>Ano de lançamento</h3><canvas id="chartAnos" height="200"></canvas></div>
+</div>
+{% else %}
+{% include "includes/empty_state.html" with message="Cadastre jogos para ver os gráficos." cta_url="cadastrar_jogo" cta_label="Adicionar jogo" %}
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% if total_jogos %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const plat = {{ chart_plataformas|safe }};
+const gen = {{ chart_generos|safe }};
+const st = {{ chart_status|safe }};
+const anos = {{ chart_anos|safe }};
+const palette = ['#6366f1', '#22d3ee', '#a855f7', '#22c55e', '#eab308', '#f97316', '#ef4444', '#94a3b8'];
+const common = { responsive: true, plugins: { legend: { display: false } } };
+
+new Chart(document.getElementById('chartPlat'), {
+  type: 'bar',
+  data: { labels: plat.labels, datasets: [{ data: plat.values, backgroundColor: '#6366f1' }] },
+  options: common,
+});
+new Chart(document.getElementById('chartGen'), {
+  type: 'doughnut',
+  data: { labels: gen.labels, datasets: [{ data: gen.values, backgroundColor: palette }] },
+  options: { responsive: true },
+});
+new Chart(document.getElementById('chartStatus'), {
+  type: 'pie',
+  data: { labels: st.labels, datasets: [{ data: st.values, backgroundColor: palette }] },
+  options: { responsive: true },
+});
+new Chart(document.getElementById('chartAnos'), {
+  type: 'line',
+  data: { labels: anos.labels, datasets: [{ data: anos.values, borderColor: '#22d3ee', tension: 0.3 }] },
+  options: common,
+});
+</script>
+{% endif %}
+{% endblock %}

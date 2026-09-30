@@ -123,10 +123,6 @@ LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "landing"
 
-RAWG_API_KEY = os.environ.get("RAWG_API_KEY", "")
-IGDB_CLIENT_ID = os.environ.get("IGDB_CLIENT_ID", "")
-IGDB_CLIENT_SECRET = os.environ.get("IGDB_CLIENT_SECRET", "")
-
 GAMES_PER_PAGE = int(os.environ.get("GAMES_PER_PAGE", "12"))
 
 # ──────────────────────────────────────────────

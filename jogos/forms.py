@@ -3,10 +3,22 @@ from django import forms
 from .models import (
     Avaliacao,
     Conquista,
+    Genero,
     ItemListaDesejo,
     Jogo,
+    Plataforma,
     SessaoJogo,
 )
+
+
+def _estilizar_campos(form):
+    for field in form.fields.values():
+        if isinstance(field.widget, forms.CheckboxInput):
+            continue
+        if isinstance(field.widget, forms.CheckboxSelectMultiple):
+            field.widget.attrs["class"] = "gv-checklist"
+            continue
+        field.widget.attrs.setdefault("class", "gv-input")
 
 
 class JogoForm(forms.ModelForm):
@@ -16,7 +28,7 @@ class JogoForm(forms.ModelForm):
             "nome",
             "desenvolvedora",
             "distribuidora",
-            "plataforma_ref",
+            "plataformas",
             "descricao",
             "preco",
             "preco_compra",
@@ -24,7 +36,6 @@ class JogoForm(forms.ModelForm):
             "classificacao",
             "multiplayer",
             "genero",
-            "generos",
             "capa",
             "banner",
             "website",
@@ -40,19 +51,43 @@ class JogoForm(forms.ModelForm):
             "tags": forms.TextInput(
                 attrs={"placeholder": "Ex.: rpg, open-world, coop"}
             ),
-            "generos": forms.CheckboxSelectMultiple(),
+            "plataformas": forms.CheckboxSelectMultiple(),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for name, field in self.fields.items():
-            css = "gv-input"
-            if isinstance(field.widget, forms.CheckboxInput):
-                continue
-            if isinstance(field.widget, forms.CheckboxSelectMultiple):
-                field.widget.attrs["class"] = "gv-checklist"
-                continue
-            field.widget.attrs.setdefault("class", css)
+        self.fields["plataformas"].label = "Plataformas"
+        self.fields["genero"].label = "Gênero"
+        self.fields["plataformas"].help_text = "Marque uma ou mais plataformas."
+        _estilizar_campos(self)
+
+    def save(self, commit=True):
+        jogo = super().save(commit=commit)
+        if commit and jogo.genero_id:
+            jogo.generos.add(jogo.genero)
+        return jogo
+
+
+class GeneroForm(forms.ModelForm):
+    class Meta:
+        model = Genero
+        fields = ["nome", "descricao"]
+        widgets = {"descricao": forms.Textarea(attrs={"rows": 3})}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        _estilizar_campos(self)
+
+
+class PlataformaForm(forms.ModelForm):
+    class Meta:
+        model = Plataforma
+        fields = ["nome", "fabricante", "descricao"]
+        widgets = {"descricao": forms.Textarea(attrs={"rows": 3})}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        _estilizar_campos(self)
 
 
 class ProgressoJogoForm(forms.ModelForm):
@@ -75,6 +110,11 @@ class AvaliacaoForm(forms.ModelForm):
             "nota": forms.NumberInput(attrs={"min": 1, "max": 5}),
             "comentario": forms.Textarea(attrs={"rows": 4}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["nota"].help_text = "De 1 a 5."
+        _estilizar_campos(self)
 
 
 class ItemListaDesejoForm(forms.ModelForm):
@@ -103,11 +143,3 @@ class SessaoJogoForm(forms.ModelForm):
             ),
             "notas": forms.Textarea(attrs={"rows": 2}),
         }
-
-
-class BuscaImportacaoForm(forms.Form):
-    q = forms.CharField(
-        label="Buscar jogo externo",
-        max_length=200,
-        widget=forms.TextInput(attrs={"placeholder": "Nome do jogo na RAWG..."}),
-    )

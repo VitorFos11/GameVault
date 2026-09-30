@@ -11,8 +11,15 @@
     <a href="{% url 'biblioteca' %}" class="{% if request.resolver_match.url_name == 'biblioteca' or request.resolver_match.url_name == 'lista_jogos' %}active{% endif %}">
       <span class="gv-nav-icon" aria-hidden="true">▤</span><span class="nav-label">Biblioteca</span>
     </a>
-    <a href="{% url 'lista_desejos' %}" class="{% if request.resolver_match.url_name == 'lista_desejos' %}active{% endif %}">
+    <a href="{% url 'lista_desejos' %}" class="{% if 'desejo' in request.resolver_match.url_name or request.resolver_match.url_name == 'lista_desejos' %}active{% endif %}">
       <span class="gv-nav-icon" aria-hidden="true">♡</span><span class="nav-label">Wishlist</span>
+    </a>
+    <p class="gv-nav-label">Catálogo</p>
+    <a href="{% url 'lista_generos' %}" class="{% if 'genero' in request.resolver_match.url_name %}active{% endif %}">
+      <span class="gv-nav-icon" aria-hidden="true">◈</span><span class="nav-label">Gêneros</span>
+    </a>
+    <a href="{% url 'lista_plataformas' %}" class="{% if 'plataforma' in request.resolver_match.url_name %}active{% endif %}">
+      <span class="gv-nav-icon" aria-hidden="true">▢</span><span class="nav-label">Plataformas</span>
     </a>
     <a href="{% url 'conquistas' %}" class="{% if request.resolver_match.url_name == 'conquistas' %}active{% endif %}">
       <span class="gv-nav-icon" aria-hidden="true">★</span><span class="nav-label">Conquistas</span>
@@ -20,11 +27,6 @@
     <a href="{% url 'estatisticas' %}" class="{% if request.resolver_match.url_name == 'estatisticas' %}active{% endif %}">
       <span class="gv-nav-icon" aria-hidden="true">◔</span><span class="nav-label">Estatísticas</span>
     </a>
-    <a href="{% url 'importar_jogo_api' %}" class="{% if request.resolver_match.url_name == 'importar_jogo_api' %}active{% endif %}">
-      <span class="gv-nav-icon" aria-hidden="true">⇣</span><span class="nav-label">Importar</span>
-    </a>
-  </nav>
-  <nav class="gv-nav" style="margin-top:auto">
     <a href="{% url 'configuracoes' %}" class="{% if request.resolver_match.url_name == 'configuracoes' %}active{% endif %}">
       <span class="gv-nav-icon" aria-hidden="true">⚙</span><span class="nav-label">Configurações</span>
     </a>

@@ -1,13 +1,47 @@
 {% extends "base.html" %}
 {% block title %}Perfil — GameVault{% endblock %}
 {% block content %}
-<h1 class="gv-page-title">Perfil</h1>
+<div class="gv-page-head">
+  <div>
+    <h1 class="gv-page-title">Perfil</h1>
+    <p class="gv-page-sub">Membro desde {{ member_since|date:"d/m/Y" }}</p>
+  </div>
+</div>
 <div class="gv-stat-grid">
   <div class="gv-stat-card"><div class="value">{{ stats.total_jogos }}</div><div class="label">Jogos</div></div>
   <div class="gv-stat-card"><div class="value">{{ stats.concluidos }}</div><div class="label">Concluídos</div></div>
   <div class="gv-stat-card"><div class="value">{{ stats.horas_jogadas|floatformat:0 }}h</div><div class="label">Horas</div></div>
   <div class="gv-stat-card"><div class="value">{% if media_avaliacao %}{{ media_avaliacao|floatformat:1 }}{% else %}—{% endif %}</div><div class="label">Média</div></div>
 </div>
+
+<div class="gv-breakdown-grid">
+  <section class="gv-detail-panel">
+    <h2>Gêneros mais jogados</h2>
+    {% for item in generos_fav %}
+    <div class="gv-breakdown-row">
+      <div class="gv-breakdown-meta">
+        <span>{{ item.genero__nome }}</span>
+        <strong>{{ item.total }}</strong>
+      </div>
+    </div>
+    {% empty %}
+    <p class="meta">Cadastre jogos para ver este resumo.</p>
+    {% endfor %}
+  </section>
+  <section class="gv-detail-panel">
+    <h2>Plataformas mais usadas</h2>
+    {% for item in plataformas_fav %}
+    <div class="gv-breakdown-row">
+      <div class="gv-breakdown-meta">
+        <span>{{ item.plataformas__nome|default:"Sem plataforma" }}</span>
+        <strong>{{ item.total }}</strong>
+      </div>
+    </div>
+    {% empty %}
+    <p class="meta">Cadastre jogos para ver este resumo.</p>
+    {% endfor %}
+  </section>
+</div>
+
 <form method="post" enctype="multipart/form-data" class="gv-detail-panel">{% csrf_token %}{{ form.as_p }}<button class="gv-btn gv-btn-primary">Salvar perfil</button></form>
-<p class="meta" style="margin-top:1rem">Membro desde {{ member_since|date:"d/m/Y" }}</p>
 {% endblock %}

@@ -74,8 +74,9 @@ class GeneroAdmin(admin.ModelAdmin):
 
 @admin.register(Plataforma)
 class PlataformaAdmin(admin.ModelAdmin):
-    list_display = ("nome", "slug", "total_jogos", "criado_em")
-    search_fields = ("nome",)
+    list_display = ("nome", "fabricante", "slug", "total_jogos", "criado_em")
+    list_filter = ("fabricante",)
+    search_fields = ("nome", "fabricante", "descricao")
     prepopulated_fields = {"slug": ("nome",)}
     readonly_fields = ("criado_em",)
     ordering = ("nome",)
@@ -97,7 +98,7 @@ class JogoAdmin(admin.ModelAdmin):
         "nome",
         "usuario",
         "badge_status",
-        "plataforma_ref",
+        "plataformas_lista",
         "genero",
         "preco_fmt",
         "horas_jogadas",
@@ -105,11 +106,11 @@ class JogoAdmin(admin.ModelAdmin):
         "criado_em",
     )
     list_display_links = ("nome",)
-    list_filter = ("status", "genero", "plataforma_ref", "multiplayer", "criado_em")
+    list_filter = ("status", "genero", "plataformas", "multiplayer", "criado_em")
     search_fields = ("nome", "desenvolvedora", "distribuidora", "tags")
     prepopulated_fields = {"slug": ("nome",)}
     readonly_fields = ("criado_em", "atualizado_em", "slug")
-    filter_horizontal = ("generos",)
+    filter_horizontal = ("generos", "plataformas")
     date_hierarchy = "criado_em"
     ordering = ("-criado_em",)
     list_per_page = 25
@@ -123,7 +124,7 @@ class JogoAdmin(admin.ModelAdmin):
             "fields": ("data_lancamento", "desenvolvedora", "distribuidora", "website"),
         }),
         ("Classificação", {
-            "fields": ("genero", "generos", "plataforma_ref", "plataforma", "classificacao", "multiplayer", "tags"),
+            "fields": ("genero", "generos", "plataformas", "classificacao", "multiplayer", "tags"),
         }),
         ("Biblioteca pessoal", {
             "fields": (
@@ -138,6 +139,9 @@ class JogoAdmin(admin.ModelAdmin):
         }),
     )
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related("plataformas")
+
     def capa_thumb(self, obj):
         return capa_thumb(obj)
     capa_thumb.short_description = "Capa"
@@ -149,6 +153,11 @@ class JogoAdmin(admin.ModelAdmin):
     def preco_fmt(self, obj):
         return format_html("R$ {}", obj.preco)
     preco_fmt.short_description = "Preço"
+
+    def plataformas_lista(self, obj):
+        nomes = [plataforma.nome for plataforma in obj.plataformas.all()]
+        return ", ".join(nomes) or "—"
+    plataformas_lista.short_description = "Plataformas"
 
     @admin.action(description="Marcar como Concluído")
     def marcar_concluido(self, request, queryset):
@@ -183,9 +192,9 @@ estrelas.short_description = "Nota"
 
 @admin.register(Avaliacao)
 class AvaliacaoAdmin(admin.ModelAdmin):
-    list_display = ("jogo", "usuario", estrelas, "atualizado_em")
-    list_filter = ("nota",)
-    search_fields = ("jogo__nome", "usuario__username")
+    list_display = ("jogo", "usuario", estrelas, "criado_em", "atualizado_em")
+    list_filter = ("nota", "jogo__genero", "jogo__plataformas")
+    search_fields = ("jogo__nome", "usuario__username", "comentario")
     readonly_fields = ("criado_em", "atualizado_em")
     date_hierarchy = "criado_em"
 

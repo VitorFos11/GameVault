@@ -35,6 +35,40 @@
     </div>
 
     <div class="gv-detail-panel">
+      <h2>Relacionamentos</h2>
+      <dl class="gv-facts">
+        <div><dt>Gênero</dt><dd>{{ jogo.genero.nome }}</dd></div>
+        <div><dt>Plataforma</dt><dd>{{ jogo.nome_plataforma }}</dd></div>
+        <div><dt>Preço</dt><dd>R$ {{ jogo.preco }}</dd></div>
+        <div><dt>Desenvolvedora</dt><dd>{{ jogo.desenvolvedora }}</dd></div>
+      </dl>
+    </div>
+
+    <div class="gv-detail-panel">
+      <h2>Avaliações</h2>
+      <p class="meta">Média geral: {% if media_notas %}{{ media_notas|floatformat:1 }} / 5{% else %}ainda sem notas{% endif %}</p>
+      <ul class="gv-review-list">
+        {% for av in avaliacoes %}
+        <li>
+          <div class="gv-review-head">
+            <strong>{{ av.usuario.username }}</strong>
+            <span class="gv-stars" aria-label="{{ av.nota }} de 5">{% for i in "12345" %}{% if forloop.counter <= av.nota %}★{% else %}☆{% endif %}{% endfor %}</span>
+          </div>
+          {% if av.comentario %}<p>{{ av.comentario }}</p>{% endif %}
+          <p class="meta">{{ av.criado_em|date:"d/m/Y" }}</p>
+        </li>
+        {% empty %}
+        <li class="meta">Nenhuma avaliação ainda.</li>
+        {% endfor %}
+      </ul>
+      <h3 class="gv-form-section" style="margin-top:1rem">{% if avaliacao %}Editar sua avaliação{% else %}Nova avaliação{% endif %}</h3>
+      <form method="post" action="{% url 'salvar_avaliacao' jogo.id %}" class="gv-form-stack">{% csrf_token %}{{ avaliacao_form.as_p }}<button class="gv-btn gv-btn-primary">Salvar avaliação</button></form>
+      {% if avaliacao %}
+      <form method="post" action="{% url 'excluir_avaliacao' jogo.id %}" style="margin-top:0.75rem">{% csrf_token %}<button class="gv-btn gv-btn-ghost">Excluir minha avaliação</button></form>
+      {% endif %}
+    </div>
+
+    <div class="gv-detail-panel">
       <h2>Progresso</h2>
       <div class="gv-progress" style="height:10px;margin:0.75rem 0"><span style="width:{{ jogo.percentual_conclusao }}%"></span></div>
       <p>{{ jogo.percentual_conclusao }}% concluído · {{ jogo.horas_jogadas|floatformat:1 }}h jogadas</p>
@@ -62,11 +96,6 @@
         {% endfor %}
       </ul>
       <form method="post" action="{% url 'adicionar_conquista' jogo.id %}" style="margin-top:1rem">{% csrf_token %}{{ conquista_form.as_p }}<button class="gv-btn gv-btn-ghost">Adicionar</button></form>
-    </div>
-
-    <div class="gv-detail-panel">
-      <h2>Sua avaliação</h2>
-      <form method="post" action="{% url 'salvar_avaliacao' jogo.id %}">{% csrf_token %}{{ avaliacao_form.as_p }}<button class="gv-btn gv-btn-primary">Salvar avaliação</button></form>
     </div>
 
     <div class="gv-detail-panel">

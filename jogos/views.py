@@ -2,20 +2,22 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
-from django.db.models import Q
-from django.http import JsonResponse
+from django.db.models import Avg, Count, Q
+from django.db.models.deletion import ProtectedError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
 from django.conf import settings
 
 from .forms import (
     AvaliacaoForm,
-    BuscaImportacaoForm,
     ConquistaForm,
+    GeneroForm,
     ItemListaDesejoForm,
     JogoForm,
+    PlataformaForm,
     ProgressoJogoForm,
     SessaoJogoForm,
 )
@@ -32,8 +34,21 @@ from .models import (
     TipoNotificacao,
 )
 from .permissions import jogos_do_usuario, obter_jogo_usuario
-from .services.game_api import ExternalGameAPIError, get_game_api_service
-from .stats import dados_graficos, estatisticas_dashboard, recomendacoes_para_usuario
+from .stats import (
+    dados_graficos,
+    estatisticas_dashboard,
+    indicadores_academicos,
+    recomendacoes_para_usuario,
+)
+
+
+def _redirect_seguro(request, destino, *, fallback, **kwargs):
+    """Só aceita 'next' que aponte para o próprio site."""
+    if destino and url_has_allowed_host_and_scheme(
+        destino, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        return redirect(destino)
+    return redirect(fallback, **kwargs)
 
 
 def landing(request):
@@ -44,16 +59,12 @@ def landing(request):
 
 @login_required
 def dashboard(request):
-    qs = jogos_do_usuario(request.user).select_related("genero", "plataforma_ref")
-    stats = estatisticas_dashboard(qs)
-    charts = dados_graficos(qs, request.user)
-    recomendados = recomendacoes_para_usuario(qs)
-    recentes = qs[:8]
+    qs = jogos_do_usuario(request.user).select_related("genero").prefetch_related("plataformas")
     context = {
-        **stats,
-        **charts,
-        "recomendados": recomendados,
-        "recentes": recentes,
+        **estatisticas_dashboard(qs),
+        **indicadores_academicos(qs),
+        "recomendados": recomendacoes_para_usuario(qs),
+        "recentes": qs[:8],
     }
     return render(request, "jogos/dashboard.html", context)
 
@@ -74,18 +85,17 @@ def _filtrar_jogos(request, queryset):
             | Q(distribuidora__icontains=busca)
             | Q(tags__icontains=busca)
             | Q(genero__nome__icontains=busca)
-            | Q(plataforma__icontains=busca)
-            | Q(plataforma_ref__nome__icontains=busca)
+            | Q(plataformas__nome__icontains=busca)
         ).distinct()
 
     if status:
         queryset = queryset.filter(status=status)
     if plataforma:
-        queryset = queryset.filter(
-            Q(plataforma_ref__slug=plataforma) | Q(plataforma__iexact=plataforma)
-        )
+        queryset = queryset.filter(plataformas__slug=plataforma).distinct()
     if genero:
-        queryset = queryset.filter(Q(genero__slug=genero) | Q(generos__slug=genero))
+        queryset = queryset.filter(
+            Q(genero__slug=genero) | Q(generos__slug=genero)
+        ).distinct()
     if ano:
         queryset = queryset.filter(data_lancamento__year=ano)
     if nota_min:
@@ -107,9 +117,9 @@ def _filtrar_jogos(request, queryset):
 
 @login_required
 def biblioteca(request):
-    qs = jogos_do_usuario(request.user).select_related(
-        "genero", "plataforma_ref"
-    ).prefetch_related("generos")
+    qs = jogos_do_usuario(request.user).select_related("genero").prefetch_related(
+        "generos", "plataformas"
+    )
     qs, busca = _filtrar_jogos(request, qs)
     view_mode = request.GET.get("view", "grid")
 
@@ -143,7 +153,7 @@ def cadastrar_jogo(request):
             jogo.usuario = request.user
             jogo.save()
             form.save_m2m()
-            if not jogo.generos.exists():
+            if jogo.genero_id:
                 jogo.generos.add(jogo.genero)
             messages.success(request, "Jogo adicionado à sua biblioteca.")
             return redirect("detalhe_jogo", id=jogo.id)
@@ -182,15 +192,12 @@ def excluir_jogo(request, id):
 @login_required
 def detalhe_jogo(request, id):
     jogo = get_object_or_404(
-        Jogo.objects.select_related("genero", "plataforma_ref", "usuario").prefetch_related(
-            "generos", "conquistas", "sessoes", "avaliacoes"
+        Jogo.objects.select_related("genero", "usuario").prefetch_related(
+            "generos", "plataformas", "conquistas", "sessoes", "avaliacoes"
         ),
         pk=id,
     )
-    if not request.user.is_staff and jogo.usuario_id not in (
-        None,
-        request.user.id,
-    ):
+    if not request.user.is_staff and jogo.usuario_id != request.user.id:
         raise PermissionDenied
 
     avaliacao = Avaliacao.objects.filter(jogo=jogo, usuario=request.user).first()
@@ -200,6 +207,8 @@ def detalhe_jogo(request, id):
     sessao_form = SessaoJogoForm(
         initial={"iniciado_em": timezone.localtime().strftime("%Y-%m-%dT%H:%M")}
     )
+
+    media_notas = jogo.avaliacoes.aggregate(m=Avg("nota"))["m"]
 
     total_conquistas = jogo.conquistas.count()
     conquistas_ok = jogo.conquistas.filter(concluida=True).count()
@@ -221,6 +230,8 @@ def detalhe_jogo(request, id):
             usuario=request.user, jogo=jogo
         ).exists(),
         "status_choices": StatusJogo.choices,
+        "media_notas": media_notas,
+        "avaliacoes": jogo.avaliacoes.select_related("usuario"),
     }
     return render(request, "jogos/detalhe.html", context)
 
@@ -272,6 +283,181 @@ def salvar_avaliacao(request, id):
 
 @login_required
 @require_POST
+def excluir_avaliacao(request, id):
+    jogo = obter_jogo_usuario(request, id)
+    Avaliacao.objects.filter(jogo=jogo, usuario=request.user).delete()
+    jogo.avaliacao_pessoal = None
+    jogo.save(update_fields=["avaliacao_pessoal"])
+    messages.success(request, "Avaliação removida.")
+    return redirect("detalhe_jogo", id=id)
+
+
+@login_required
+def lista_generos(request):
+    generos = Genero.objects.annotate(total_jogos=Count("jogos"))
+    return render(
+        request,
+        "jogos/catalogo_lista.html",
+        {
+            "titulo": "Gêneros",
+            "subtitulo": "Um gênero pode estar ligado a vários jogos (1:N).",
+            "itens": generos,
+            "criar_url": "cadastrar_genero",
+            "criar_label": "Novo gênero",
+            "editar_url": "editar_genero",
+            "excluir_url": "excluir_genero",
+            "campo_extra": "descricao",
+        },
+    )
+
+
+@login_required
+def cadastrar_genero(request):
+    return _salvar_catalogo(
+        request,
+        GeneroForm,
+        "Novo gênero",
+        "Informe o nome do gênero. Depois ele poderá ser escolhido ao cadastrar um jogo.",
+        "lista_generos",
+        "Gênero cadastrado.",
+    )
+
+
+@login_required
+def editar_genero(request, id):
+    genero = get_object_or_404(Genero, pk=id)
+    return _salvar_catalogo(
+        request,
+        GeneroForm,
+        "Editar gênero",
+        f"{genero.jogos.count()} jogo(s) usam este gênero.",
+        "lista_generos",
+        "Gênero atualizado.",
+        instance=genero,
+    )
+
+
+@login_required
+def excluir_genero(request, id):
+    genero = get_object_or_404(Genero, pk=id)
+    return _excluir_catalogo(
+        request,
+        genero,
+        "Excluir gênero?",
+        "lista_generos",
+        f'Gênero "{genero.nome}" removido.',
+        "Não é possível excluir este gênero porque existem jogos vinculados a ele.",
+    )
+
+
+@login_required
+def lista_plataformas(request):
+    plataformas = Plataforma.objects.annotate(total_jogos=Count("jogos"))
+    return render(
+        request,
+        "jogos/catalogo_lista.html",
+        {
+            "titulo": "Plataformas",
+            "subtitulo": "Cada plataforma é separada e pode estar ligada a vários jogos (N:N).",
+            "itens": plataformas,
+            "criar_url": "cadastrar_plataforma",
+            "criar_label": "Nova plataforma",
+            "editar_url": "editar_plataforma",
+            "excluir_url": "excluir_plataforma",
+            "campo_extra": "fabricante",
+        },
+    )
+
+
+@login_required
+def cadastrar_plataforma(request):
+    return _salvar_catalogo(
+        request,
+        PlataformaForm,
+        "Nova plataforma",
+        "Cadastre a plataforma antes de associá-la a um jogo.",
+        "lista_plataformas",
+        "Plataforma cadastrada.",
+    )
+
+
+@login_required
+def editar_plataforma(request, id):
+    plataforma = get_object_or_404(Plataforma, pk=id)
+    return _salvar_catalogo(
+        request,
+        PlataformaForm,
+        "Editar plataforma",
+        f"{plataforma.jogos.count()} jogo(s) usam esta plataforma.",
+        "lista_plataformas",
+        "Plataforma atualizada.",
+        instance=plataforma,
+    )
+
+
+@login_required
+def excluir_plataforma(request, id):
+    plataforma = get_object_or_404(Plataforma, pk=id)
+    if request.method == "POST" and plataforma.jogos.exists():
+        messages.error(
+            request,
+            "Não é possível excluir esta plataforma porque existem jogos vinculados a ela.",
+        )
+        return redirect("lista_plataformas")
+    return _excluir_catalogo(
+        request,
+        plataforma,
+        "Excluir plataforma?",
+        "lista_plataformas",
+        f'Plataforma "{plataforma.nome}" removida.',
+        "Não é possível excluir esta plataforma porque existem jogos vinculados a ela.",
+    )
+
+
+def _salvar_catalogo(request, form_class, titulo, subtitulo, redirect_name, sucesso, instance=None):
+    if request.method == "POST":
+        form = form_class(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, sucesso)
+            return redirect(redirect_name)
+    else:
+        form = form_class(instance=instance)
+    return render(
+        request,
+        "jogos/catalogo_form.html",
+        {
+            "form": form,
+            "titulo": titulo,
+            "subtitulo": subtitulo,
+            "voltar_url": redirect_name,
+        },
+    )
+
+
+def _excluir_catalogo(request, objeto, titulo, redirect_name, sucesso, bloqueio):
+    if request.method == "POST":
+        try:
+            objeto.delete()
+        except ProtectedError:
+            messages.error(request, bloqueio)
+            return redirect(redirect_name)
+        messages.success(request, sucesso)
+        return redirect(redirect_name)
+    return render(
+        request,
+        "jogos/catalogo_excluir.html",
+        {
+            "titulo": titulo,
+            "objeto": objeto,
+            "voltar_url": redirect_name,
+            "aviso": bloqueio,
+        },
+    )
+
+
+@login_required
+@require_POST
 def alterar_status_rapido(request, id):
     jogo = obter_jogo_usuario(request, id)
     status = request.POST.get("status")
@@ -286,7 +472,8 @@ def alterar_status_rapido(request, id):
 def lista_desejos(request):
     itens = (
         ItemListaDesejo.objects.filter(usuario=request.user)
-        .select_related("jogo", "jogo__genero", "jogo__plataforma_ref")
+        .select_related("jogo", "jogo__genero")
+        .prefetch_related("jogo__plataformas")
         .order_by("-prioridade", "-criado_em")
     )
     return render(request, "jogos/lista_desejos.html", {"itens": itens})
@@ -300,10 +487,9 @@ def adicionar_lista_desejo(request, id):
     jogo.status = StatusJogo.WISHLIST
     jogo.save(update_fields=["status"])
     messages.success(request, "Adicionado à lista de desejos.")
-    next_url = request.POST.get("next")
-    if next_url:
-        return redirect(next_url)
-    return redirect("detalhe_jogo", id=id)
+    return _redirect_seguro(
+        request, request.POST.get("next"), fallback="detalhe_jogo", id=id
+    )
 
 
 @login_required
@@ -312,10 +498,9 @@ def remover_lista_desejo(request, id):
     jogo = obter_jogo_usuario(request, id)
     ItemListaDesejo.objects.filter(usuario=request.user, jogo=jogo).delete()
     messages.success(request, "Removido da lista de desejos.")
-    next_url = request.POST.get("next")
-    if next_url:
-        return redirect(next_url)
-    return redirect("lista_desejos")
+    return _redirect_seguro(
+        request, request.POST.get("next"), fallback="lista_desejos"
+    )
 
 
 @login_required
@@ -406,21 +591,4 @@ def notificacoes_view(request):
     nots = request.user.notificacoes.all()[:50]
     request.user.notificacoes.filter(lida=False).update(lida=True)
     return render(request, "jogos/notificacoes.html", {"notificacoes": nots})
-
-
-@login_required
-def importar_jogo_api(request):
-    service = get_game_api_service()
-    resultados = []
-    form = BuscaImportacaoForm(request.GET or None)
-    if form.is_valid() and form.cleaned_data["q"]:
-        try:
-            resultados = service.search(form.cleaned_data["q"])
-        except ExternalGameAPIError as exc:
-            messages.error(request, str(exc))
-    return render(
-        request,
-        "jogos/importar_api.html",
-        {"form": form, "resultados": resultados, "api_enabled": service.enabled},
-    )
 

@@ -3,12 +3,12 @@
 {% block title %}Biblioteca — GameVault{% endblock %}
 
 {% block content %}
-<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:1rem">
+<div class="gv-page-head">
   <div>
     <h1 class="gv-page-title">Minha biblioteca</h1>
     <p class="gv-page-sub">{{ total_filtrado }} jogo(s) encontrado(s)</p>
   </div>
-  <div style="display:flex;gap:0.5rem">
+  <div class="gv-detail-actions" style="margin:0">
     <a href="?{% for k,v in request.GET.items %}{% if k != 'view' %}{{ k }}={{ v }}&{% endif %}{% endfor %}view=grid" class="gv-btn gv-btn-ghost">Grade</a>
     <a href="?{% for k,v in request.GET.items %}{% if k != 'view' %}{{ k }}={{ v }}&{% endif %}{% endfor %}view=list" class="gv-btn gv-btn-ghost">Lista</a>
   </div>
@@ -16,37 +16,60 @@
 
 <form class="gv-filters" method="get">
   <input type="hidden" name="view" value="{{ view_mode }}">
-  <input type="search" name="buscar" placeholder="Buscar..." value="{{ busca }}">
-  <select name="status" aria-label="Status">
-    <option value="">Status</option>
-    {% for val, label in status_choices %}
-    <option value="{{ val }}" {% if filtros.status == val %}selected{% endif %}>{{ label }}</option>
-    {% endfor %}
-  </select>
-  <select name="plataforma" aria-label="Plataforma">
-    <option value="">Plataforma</option>
-    {% for p in plataformas %}
-    <option value="{{ p.slug }}" {% if filtros.plataforma == p.slug %}selected{% endif %}>{{ p.nome }}</option>
-    {% endfor %}
-  </select>
-  <select name="genero" aria-label="Gênero">
-    <option value="">Gênero</option>
-    {% for g in generos %}
-    <option value="{{ g.slug }}" {% if filtros.genero == g.slug %}selected{% endif %}>{{ g.nome }}</option>
-    {% endfor %}
-  </select>
-  <input type="number" name="ano" placeholder="Ano" value="{{ filtros.ano }}" min="1970" max="2030">
-  <input type="number" step="0.5" name="nota_min" placeholder="Nota mín." value="{{ filtros.nota_min }}">
-  <select name="ordenar" aria-label="Ordenar">
-    <option value="recente" {% if filtros.ordenar == 'recente' or not filtros.ordenar %}selected{% endif %}>Recentes</option>
-    <option value="nome" {% if filtros.ordenar == 'nome' %}selected{% endif %}>Nome</option>
-    <option value="lancamento" {% if filtros.ordenar == 'lancamento' %}selected{% endif %}>Lançamento</option>
-    <option value="nota" {% if filtros.ordenar == 'nota' %}selected{% endif %}>Avaliação</option>
-    <option value="horas" {% if filtros.ordenar == 'horas' %}selected{% endif %}>Horas</option>
-    <option value="preco" {% if filtros.ordenar == 'preco' %}selected{% endif %}>Preço</option>
-  </select>
-  <button type="submit" class="gv-btn gv-btn-primary">Filtrar</button>
-  <a href="{% url 'biblioteca' %}" class="gv-btn gv-btn-ghost">Limpar</a>
+  <div class="gv-filter-field gv-filter-grow">
+    <label for="filtro-buscar">Busca</label>
+    <input id="filtro-buscar" type="search" name="buscar" placeholder="Nome, estúdio ou tag" value="{{ busca }}">
+  </div>
+  <div class="gv-filter-field">
+    <label for="filtro-status">Status</label>
+    <select id="filtro-status" name="status">
+      <option value="">Todos</option>
+      {% for val, label in status_choices %}
+      <option value="{{ val }}" {% if filtros.status == val %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="gv-filter-field">
+    <label for="filtro-plataforma">Plataforma</label>
+    <select id="filtro-plataforma" name="plataforma">
+      <option value="">Todas</option>
+      {% for p in plataformas %}
+      <option value="{{ p.slug }}" {% if filtros.plataforma == p.slug %}selected{% endif %}>{{ p.nome }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="gv-filter-field">
+    <label for="filtro-genero">Gênero</label>
+    <select id="filtro-genero" name="genero">
+      <option value="">Todos</option>
+      {% for g in generos %}
+      <option value="{{ g.slug }}" {% if filtros.genero == g.slug %}selected{% endif %}>{{ g.nome }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="gv-filter-field">
+    <label for="filtro-ano">Ano</label>
+    <input id="filtro-ano" type="number" name="ano" placeholder="2024" value="{{ filtros.ano }}" min="1970" max="2030">
+  </div>
+  <div class="gv-filter-field">
+    <label for="filtro-nota">Nota mín.</label>
+    <input id="filtro-nota" type="number" step="0.5" name="nota_min" placeholder="0–5" value="{{ filtros.nota_min }}">
+  </div>
+  <div class="gv-filter-field">
+    <label for="filtro-ordenar">Ordenar</label>
+    <select id="filtro-ordenar" name="ordenar">
+      <option value="recente" {% if filtros.ordenar == 'recente' or not filtros.ordenar %}selected{% endif %}>Recentes</option>
+      <option value="nome" {% if filtros.ordenar == 'nome' %}selected{% endif %}>Nome</option>
+      <option value="lancamento" {% if filtros.ordenar == 'lancamento' %}selected{% endif %}>Lançamento</option>
+      <option value="nota" {% if filtros.ordenar == 'nota' %}selected{% endif %}>Avaliação</option>
+      <option value="horas" {% if filtros.ordenar == 'horas' %}selected{% endif %}>Horas</option>
+      <option value="preco" {% if filtros.ordenar == 'preco' %}selected{% endif %}>Preço</option>
+    </select>
+  </div>
+  <div class="gv-filter-actions">
+    <button type="submit" class="gv-btn gv-btn-primary">Filtrar</button>
+    <a href="{% url 'biblioteca' %}" class="gv-btn gv-btn-ghost">Limpar</a>
+  </div>
 </form>
 
 {% if jogos %}

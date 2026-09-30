@@ -1,18 +1,21 @@
 <article class="gv-game-card">
-  <a href="{% url 'detalhe_jogo' jogo.id %}">
+  <a href="{% url 'detalhe_jogo' jogo.id %}" class="cover-link">
     {% if jogo.capa %}
     <img src="{{ jogo.capa.url }}" alt="Capa de {{ jogo.nome }}" class="cover" loading="lazy">
     {% else %}
     <div class="cover-placeholder" aria-hidden="true">🎮</div>
     {% endif %}
+    <span class="gv-badge status-{{ jogo.status }} card-badge">{{ jogo.get_status_display }}</span>
   </a>
   <div class="body">
     <h3><a href="{% url 'detalhe_jogo' jogo.id %}">{{ jogo.nome }}</a></h3>
     <p class="meta">{{ jogo.genero.nome }} · {{ jogo.nome_plataforma }}</p>
-    {% if jogo.avaliacao_pessoal %}
-    <p class="meta">★ {{ jogo.avaliacao_pessoal }}</p>
-    {% endif %}
-    <span class="gv-badge status-{{ jogo.status }}">{{ jogo.get_status_display }}</span>
+    <div class="card-foot">
+      {% if jogo.avaliacao_pessoal %}
+      <span class="card-rating" aria-label="Nota {{ jogo.avaliacao_pessoal }}">★ {{ jogo.avaliacao_pessoal }}</span>
+      {% endif %}
+      <span class="card-price">R$ {{ jogo.preco }}</span>
+    </div>
     {% if jogo.percentual_conclusao %}
     <div class="gv-progress" aria-label="Progresso {{ jogo.percentual_conclusao }}%">
       <span style="width: {{ jogo.percentual_conclusao }}%"></span>

@@ -22,7 +22,8 @@
 }
 
 .gv-sidebar.collapsed .nav-label,
-.gv-sidebar.collapsed .logo-full {
+.gv-sidebar.collapsed .logo-full,
+.gv-sidebar.collapsed .gv-nav-label {
   display: none;
 }
 

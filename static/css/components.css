@@ -37,7 +37,18 @@
 }
 
 .gv-nav a.active {
+  background: rgba(99, 102, 241, 0.16);
+  color: var(--color-text);
   box-shadow: inset 3px 0 0 var(--color-primary);
+}
+
+.gv-nav-label {
+  margin: 1rem 0.75rem 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
 }
 
 .gv-nav-icon {
@@ -131,12 +142,20 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  transition: transform var(--transition), box-shadow var(--transition);
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
 }
 
 .gv-game-card:hover {
   transform: translateY(-4px);
+  border-color: rgba(99, 102, 241, 0.45);
   box-shadow: var(--shadow-card);
+}
+
+.gv-game-card .cover-link {
+  position: relative;
+  display: block;
 }
 
 .gv-game-card .cover {
@@ -144,6 +163,13 @@
   object-fit: cover;
   width: 100%;
   background: var(--color-surface-elevated);
+}
+
+.gv-game-card .card-badge {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  backdrop-filter: blur(8px);
 }
 
 .gv-game-card .cover-placeholder {
@@ -156,17 +182,40 @@
 }
 
 .gv-game-card .body {
-  padding: 1rem;
+  padding: 0.9rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
 }
 
 .gv-game-card h3 {
   font-size: 1rem;
-  margin-bottom: 0.35rem;
+  letter-spacing: -0.01em;
 }
 
 .gv-game-card .meta {
   font-size: 0.8rem;
   color: var(--color-text-muted);
+}
+
+.gv-game-card .card-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: auto;
+  font-size: 0.8rem;
+}
+
+.gv-game-card .card-rating {
+  color: #eab308;
+  font-weight: 700;
+}
+
+.gv-game-card .card-price {
+  color: var(--color-text-muted);
+  font-weight: 600;
 }
 
 .gv-progress {
@@ -239,21 +288,32 @@
 
 .gv-search-global {
   flex: 1;
-  max-width: 420px;
+  max-width: 460px;
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .gv-search-global input {
-  padding-left: 2.25rem;
+  width: 100%;
+  height: 42px;
+  padding-left: 2.4rem;
+  border-radius: 999px;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
 }
 
-.gv-search-global::before {
-  content: "⌕";
+.gv-search-global input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+
+.gv-search-icon {
   position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
+  left: 0.9rem;
   color: var(--color-text-muted);
+  pointer-events: none;
+  font-size: 1rem;
 }
 
 .gv-chart-grid {
@@ -272,19 +332,53 @@
 }
 
 .gv-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
-  padding: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.85rem 0.75rem;
+  align-items: end;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.1rem;
   background: var(--color-surface);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
 }
 
+.gv-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.gv-filter-grow {
+  grid-column: span 2;
+}
+
+.gv-filter-field label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.gv-filters input,
 .gv-filters select {
-  width: auto;
-  min-width: 140px;
+  width: 100%;
+  min-width: 0;
+  height: 42px;
+}
+
+.gv-filter-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+@media (max-width: 720px) {
+  .gv-filter-grow {
+    grid-column: span 1;
+  }
 }
 
 .gv-modal-backdrop {

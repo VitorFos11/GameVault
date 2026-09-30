@@ -1,10 +1,10 @@
 import json
 from decimal import Decimal
 
-from django.db.models import Avg, Count, Sum
+from django.db.models import Avg, Count, Max, Min, Sum
 from django.db.models.functions import ExtractYear
 
-from .models import ItemListaDesejo, Jogo, StatusJogo
+from .models import Avaliacao, Genero, ItemListaDesejo, Plataforma, StatusJogo
 
 
 def estatisticas_dashboard(queryset):
@@ -29,12 +29,12 @@ def estatisticas_dashboard(queryset):
 
 def dados_graficos(queryset, user):
     plataformas = list(
-        queryset.values("plataforma_ref__nome", "plataforma")
-        .annotate(total=Count("id"))
+        queryset.values("plataformas__nome")
+        .annotate(total=Count("id", distinct=True))
         .order_by("-total")[:8]
     )
     plataformas_labels = [
-        p["plataforma_ref__nome"] or p["plataforma"] or "Outra" for p in plataformas
+        p["plataformas__nome"] or "Outra" for p in plataformas
     ]
     plataformas_values = [p["total"] for p in plataformas]
 
@@ -95,6 +95,37 @@ def dados_graficos(queryset, user):
         "wishlist_count": wishlist_count,
         "taxa_conclusao": taxa_conclusao,
         "media_avaliacao": queryset.aggregate(m=Avg("avaliacao_pessoal"))["m"],
+    }
+
+
+def indicadores_academicos(queryset):
+    """Indicadores do dashboard a partir do banco, via ORM."""
+    precos = queryset.aggregate(
+        media=Avg("preco"),
+        maior=Max("preco"),
+        menor=Min("preco"),
+    )
+    avaliacoes = Avaliacao.objects.filter(jogo__in=queryset)
+    por_genero = list(
+        queryset.values("genero__nome")
+        .annotate(total=Count("id"))
+        .order_by("-total", "genero__nome")
+    )
+    por_plataforma = list(
+        queryset.values("plataformas__nome")
+        .annotate(total=Count("id", distinct=True))
+        .order_by("-total", "plataformas__nome")
+    )
+    return {
+        "total_generos": Genero.objects.count(),
+        "total_plataformas": Plataforma.objects.count(),
+        "total_avaliacoes": avaliacoes.count(),
+        "preco_medio": precos["media"],
+        "preco_maior": precos["maior"],
+        "preco_menor": precos["menor"],
+        "media_avaliacoes": avaliacoes.aggregate(m=Avg("nota"))["m"],
+        "jogos_por_genero": por_genero,
+        "jogos_por_plataforma": por_plataforma,
     }
 
 
