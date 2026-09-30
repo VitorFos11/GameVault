@@ -1,58 +1,33 @@
-# =========================
 # Ambiente virtual
-# =========================
-
 venv/
 env/
 .venv/
 
-
-# =========================
 # Cache Python
-# =========================
-
 __pycache__/
 *.py[cod]
 *$py.class
 
-
-# =========================
-# Arquivos temporários
-# =========================
-
+# Temporários
 *.log
 *.tmp
+_prolobby_ref/
+_prolobby_b64.txt
 
+# Segredos locais
+.env
 
-# =========================
-# Banco de dados
-# =========================
-
-# NÃO IGNORAR O SQLITE
-# O db.sqlite3 será enviado para manter os dados do projeto
-
-
-# =========================
-# Django
-# =========================
-
-# Arquivos de mídia enviados pelos usuários
-# NÃO IGNORAR
-# media/
-
-
-# =========================
 # Editor
-# =========================
-
 .vscode/
-
 .idea/
+.cursor/
 
-
-# =========================
-# Sistema operacional
-# =========================
-
+# SO
 .DS_Store
 Thumbs.db
+
+# Playwright (opcional — scripts/capture_screenshots.py)
+.playwright/
+
+# Banco: db.sqlite3 versionado de propósito (dados demo)
+# Mídia: media/ versionada quando aplicável
