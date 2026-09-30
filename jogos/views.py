@@ -1,6 +1,5 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db.models import Avg, Count, Q
 from django.db.models.deletion import ProtectedError
@@ -192,13 +191,13 @@ def excluir_jogo(request, id):
 @login_required
 def detalhe_jogo(request, id):
     jogo = get_object_or_404(
-        Jogo.objects.select_related("genero", "usuario").prefetch_related(
+        jogos_do_usuario(request.user)
+        .select_related("genero", "usuario")
+        .prefetch_related(
             "generos", "plataformas", "conquistas", "sessoes", "avaliacoes"
         ),
         pk=id,
     )
-    if not request.user.is_staff and jogo.usuario_id != request.user.id:
-        raise PermissionDenied
 
     avaliacao = Avaliacao.objects.filter(jogo=jogo, usuario=request.user).first()
     progresso_form = ProgressoJogoForm(instance=jogo)

@@ -17,7 +17,7 @@ class GameVaultLoginView(LoginView):
 
 
 class GameVaultLogoutView(LogoutView):
-    next_page = "landing"
+    next_page = "accounts:login"
 
 
 def registro(request):

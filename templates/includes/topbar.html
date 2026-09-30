@@ -9,5 +9,6 @@
     🔔{% if notificacoes_nao_lidas %} <span>({{ notificacoes_nao_lidas }})</span>{% endif %}
   </a>
   <a href="{% url 'cadastrar_jogo' %}" class="gv-btn gv-btn-primary">+ Jogo</a>
-  <a href="{% url 'accounts:perfil' %}" class="gv-btn gv-btn-ghost" title="Perfil">{{ user.username|slice:":1"|upper }}</a>
+  <a href="{% url 'accounts:perfil' %}" class="gv-btn gv-btn-ghost" title="Perfil — {{ user.username }}">{{ user.username|slice:":1"|upper }}</a>
+  {% include "includes/logout_form.html" with label="Sair" %}
 </header>

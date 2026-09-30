@@ -57,6 +57,48 @@
   opacity: 0.9;
 }
 
+.gv-sidebar-footer {
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.gv-logout-form {
+  margin: 0;
+}
+
+.gv-logout-btn {
+  cursor: pointer;
+  font: inherit;
+  border: none;
+  background: none;
+}
+
+.gv-logout-btn--nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-weight: 500;
+  font-size: 0.925rem;
+  text-align: left;
+  transition: background var(--transition), color var(--transition);
+}
+
+.gv-logout-btn--nav:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+}
+
+.gv-logout-btn--mobile {
+  padding: 0.35rem 0.5rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
 .gv-btn {
   display: inline-flex;
   align-items: center;

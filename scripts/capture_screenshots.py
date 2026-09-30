@@ -47,6 +47,7 @@ def main():
         ("10-estatisticas.png", "/estatisticas/"),
         ("11-catalogo-generos.png", "/generos/"),
         ("09-perfil.png", "/conta/perfil/"),
+        ("12-configuracoes.png", "/configuracoes/"),
     ]
 
     with sync_playwright() as p:

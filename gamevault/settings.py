@@ -121,7 +121,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "dashboard"
-LOGOUT_REDIRECT_URL = "landing"
+LOGOUT_REDIRECT_URL = "accounts:login"
 
 GAMES_PER_PAGE = int(os.environ.get("GAMES_PER_PAGE", "12"))
 

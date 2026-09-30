@@ -14,6 +14,7 @@
 | `09-perfil.png` | `/conta/perfil/` | Perfil |
 | `10-estatisticas.png` | `/estatisticas/` | Estatísticas + gráficos |
 | `11-catalogo-generos.png` | `/generos/` | CRUD de gêneros |
+| `12-configuracoes.png` | `/configuracoes/` | Tema + sair / trocar usuário |
 
 ## Automático (Playwright)
 
@@ -33,7 +34,7 @@ python -m playwright install chromium
 python scripts/capture_screenshots.py
 ```
 
-Conta usada pelo script: **`demo`** / **`demo123456`** (criada automaticamente se não existir).
+Conta usada pelo script: **`demo`** / **`demo123456`** (criada automaticamente se não existir). As telas autenticadas mostram a UI atual (incl. **Sair** na sidebar/topbar).
 
 ## Manual
 

@@ -1,0 +1,8 @@
+<form method="post" action="{% url 'accounts:logout' %}" class="gv-logout-form">
+  {% csrf_token %}
+  <button type="submit" class="gv-logout-btn{% if style == 'nav' %} gv-logout-btn--nav{% elif style == 'mobile' %} gv-logout-btn--mobile{% else %} gv-btn gv-btn-ghost{% endif %}">
+    {% if style == 'nav' %}
+    <span class="gv-nav-icon" aria-hidden="true">↪</span><span class="nav-label">{% if label %}{{ label }}{% else %}Sair{% endif %}</span>
+    {% elif label %}{{ label }}{% else %}Sair{% endif %}
+  </button>
+</form>

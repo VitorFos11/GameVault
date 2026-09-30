@@ -65,6 +65,27 @@ class GameVaultTests(TestCase):
         response = self.client.get(reverse("editar_jogo", args=[self.jogo.id]))
         self.assertEqual(response.status_code, 403)
 
+    def test_detalhe_jogo_sem_dono_compartilhado(self):
+        compartilhado = Jogo.objects.create(
+            usuario=None,
+            nome="Demo Shared",
+            slug="demo-shared",
+            desenvolvedora="Dev",
+            distribuidora="Pub",
+            descricao="Jogo demo",
+            preco=Decimal("0"),
+            data_lancamento="2020-01-01",
+            classificacao="L",
+            genero=self.genero,
+            status=StatusJogo.BACKLOG,
+        )
+        compartilhado.plataformas.add(self.plataforma)
+        self.client.login(username="outro", password="senha12345")
+        response = self.client.get(reverse("detalhe_jogo", args=[compartilhado.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Demo Shared")
+        self.assertContains(response, "Jogo demo")
+
     def test_wishlist(self):
         self.client.login(username="tester", password="senha12345")
         self.client.post(reverse("adicionar_lista_desejo", args=[self.jogo.id]))

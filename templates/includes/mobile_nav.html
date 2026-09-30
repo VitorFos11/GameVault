@@ -3,4 +3,5 @@
   <a href="{% url 'biblioteca' %}" class="{% if request.resolver_match.url_name == 'biblioteca' %}active{% endif %}">Library</a>
   <a href="{% url 'lista_desejos' %}">Wish</a>
   <a href="{% url 'accounts:perfil' %}">Perfil</a>
+  {% include "includes/logout_form.html" with style="mobile" label="Sair" %}
 </nav>

@@ -15,5 +15,12 @@
     </div>
     <a href="{% url 'accounts:perfil' %}" class="gv-btn gv-btn-primary">Editar perfil</a>
   </div>
+  <div class="gv-account-row">
+    <div>
+      <h3>Sessão</h3>
+      <p class="meta">Encerra o login atual e volta à tela de entrada para usar outra conta.</p>
+    </div>
+    {% include "includes/logout_form.html" with label="Sair e trocar usuário" %}
+  </div>
 </section>
 {% endblock %}

@@ -29,11 +29,12 @@ Plataforma **Django** para gerenciar coleção pessoal de jogos: **dashboard** c
 
 | Etapa | O que você faz |
 |-------|----------------|
-| **1. Conta** | Registro em `/conta/registro/` — biblioteca filtrada por usuário (+ jogos sem dono compartilhados) |
+| **1. Conta** | Registro em `/conta/registro/` — biblioteca filtrada por usuário (+ jogos demo compartilhados sem dono) |
+| **1b. Sessão** | **Sair** (sidebar, topbar ou Configurações) → volta ao login para entrar com outra conta |
 | **2. Catálogo** | CRUD de gêneros e plataformas (menu lateral) |
 | **3. Biblioteca** | **+ Jogo**: cadastro, capa, status, plataformas |
 | **4. Dashboard** | Totais e distribuições calculados pelo ORM |
-| **5. Detalhe** | Avaliações, progresso, conquistas, wishlist |
+| **5. Detalhe** | Clique no jogo na biblioteca — avaliações, progresso, conquistas, wishlist |
 | **6. Apresentação** | Cadastre no site → atualize `db.sqlite3` no DBeaver ou DB Browser |
 | **7. Extra** | Admin Jazzmin · PostgreSQL opcional (`.env`) |
 
@@ -55,6 +56,8 @@ Interface **v2** (sidebar, dashboard acadêmico, biblioteca em grade, catálogo 
 | **Estatísticas** | **Catálogo — gêneros** |
 | ![Wishlist](docs/assets/telas/08-wishlist.png) | ![Perfil](docs/assets/telas/09-perfil.png) |
 | **Wishlist** | **Perfil** |
+| ![Configurações](docs/assets/telas/12-configuracoes.png) | |
+| **Configurações e sessão** | |
 
 Para regerar as capturas: [`docs/assets/telas/CAPTURAS.md`](docs/assets/telas/CAPTURAS.md) ou `python scripts/capture_screenshots.py` (com `runserver` na porta **8765**).
 
@@ -92,6 +95,8 @@ python manage.py runserver
 
 Abra **http://127.0.0.1:8000/** → criar conta ou login.
 
+**Conta demo (opcional):** `demo` / `demo123456` — o script `scripts/capture_screenshots.py` cria essa conta se ela não existir.
+
 ### Linux / macOS
 
 ```bash
@@ -119,7 +124,7 @@ python manage.py runserver
 | Página | URL |
 |--------|-----|
 | Landing | `/` |
-| Registro / Login | `/conta/registro/` · `/conta/login/` |
+| Registro / Login / Sair | `/conta/registro/` · `/conta/login/` · sair (POST em `/conta/logout/`) |
 | Dashboard | `/dashboard/` |
 | Biblioteca | `/biblioteca/` |
 | Wishlist | `/lista-desejos/` |
@@ -174,7 +179,7 @@ Documentação: [DATABASE_DBEAVER.md](docs/DATABASE_DBEAVER.md) · [DB_BROWSER_S
 ## Testes
 
 ```bash
-python manage.py test jogos
+python manage.py test jogos accounts
 ```
 
 ---
