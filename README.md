@@ -62,22 +62,34 @@ Cadastro de jogos no catálogo é **manual** (sem API externa).
 
 ## As telas
 
-Interface **v2** (sidebar, dashboard, biblioteca, explorar, catálogo e estatísticas).
+Interface **v2.1** — cada legenda corresponde à imagem **logo abaixo** (mesma coluna).
 
-| | |
-|---|---|
-| ![Landing](docs/assets/telas/01-landing.png) | ![Login](docs/assets/telas/02-login.png) |
-| **Landing** | **Login** |
-| ![Dashboard](docs/assets/telas/04-dashboard.png) | ![Biblioteca](docs/assets/telas/05-biblioteca.png) |
-| **Dashboard** | **Biblioteca** |
-| ![Detalhe](docs/assets/telas/06-detalhe.png) | ![Novo jogo](docs/assets/telas/07-formulario.png) |
-| **Detalhe do jogo** | **Cadastro de jogo (staff)** |
-| ![Estatísticas](docs/assets/telas/10-estatisticas.png) | ![Catálogo gêneros](docs/assets/telas/11-catalogo-generos.png) |
-| **Estatísticas** | **Catálogo — gêneros** |
-| ![Wishlist](docs/assets/telas/08-wishlist.png) | ![Perfil](docs/assets/telas/09-perfil.png) |
-| **Wishlist** | **Perfil** |
-| ![Configurações](docs/assets/telas/12-configuracoes.png) | |
-| **Configurações e sessão** | |
+<table>
+  <tr>
+    <td align="center" width="50%"><strong>Landing</strong><br><img src="docs/assets/telas/01-landing.png" alt="Landing page pública" width="100%"></td>
+    <td align="center" width="50%"><strong>Login</strong><br><img src="docs/assets/telas/02-login.png" alt="Tela de login" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Dashboard</strong> (usuário)<br><img src="docs/assets/telas/04-dashboard.png" alt="Dashboard pessoal" width="100%"></td>
+    <td align="center"><strong>Explorar catálogo</strong><br><img src="docs/assets/telas/13-explorar.png" alt="Explorar jogos do catálogo" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Minha biblioteca</strong><br><img src="docs/assets/telas/05-biblioteca.png" alt="Biblioteca pessoal" width="100%"></td>
+    <td align="center"><strong>Detalhe do jogo</strong><br><img src="docs/assets/telas/06-detalhe.png" alt="Detalhe de um jogo" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Cadastro de jogo</strong> (staff)<br><img src="docs/assets/telas/07-formulario.png" alt="Formulário novo jogo" width="100%"></td>
+    <td align="center"><strong>Gêneros</strong> (lista)<br><img src="docs/assets/telas/11-catalogo-generos.png" alt="Lista de gêneros" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Estatísticas</strong><br><img src="docs/assets/telas/10-estatisticas.png" alt="Gráficos e estatísticas" width="100%"></td>
+    <td align="center"><strong>Wishlist</strong><br><img src="docs/assets/telas/08-wishlist.png" alt="Lista de desejos" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Perfil</strong><br><img src="docs/assets/telas/09-perfil.png" alt="Perfil do usuário" width="100%"></td>
+    <td align="center"><strong>Configurações e sessão</strong><br><img src="docs/assets/telas/12-configuracoes.png" alt="Configurações e sair" width="100%"></td>
+  </tr>
+</table>
 
 Para regerar as capturas: [`docs/assets/telas/CAPTURAS.md`](docs/assets/telas/CAPTURAS.md) ou `python scripts/capture_screenshots.py` (com `runserver` na porta **8765**).
 
