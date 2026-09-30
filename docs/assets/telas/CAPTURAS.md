@@ -1,38 +1,40 @@
 # Capturas para o README (GameVault v2)
 
-Inspirado no [ProLobby](https://github.com/ljborgess/ProLobby.com) (branch `dev`), seção **As telas**.
+## Arquivos
 
-## Arquivos esperados
-
-Salve PNG ou JPG (largura ~1400px) nesta pasta:
-
-| Arquivo | URL (com `runserver`) | Conteúdo |
+| Arquivo | URL (`runserver 8765`) | Conteúdo |
 |---------|------------------------|----------|
 | `01-landing.png` | `/` | Landing pública |
 | `02-login.png` | `/conta/login/` | Login |
-| `03-registro.png` | `/conta/registro/` | Criar conta |
-| `04-dashboard.png` | `/dashboard/` | Dashboard + gráficos |
-| `05-biblioteca.png` | `/biblioteca/` | Biblioteca (grade) |
+| `04-dashboard.png` | `/dashboard/` | Dashboard acadêmico |
+| `05-biblioteca.png` | `/biblioteca/` | Biblioteca (grade + filtros) |
 | `06-detalhe.png` | `/jogo/<id>/` | Detalhe do jogo |
 | `07-formulario.png` | `/novo/` | Cadastro de jogo |
 | `08-wishlist.png` | `/lista-desejos/` | Wishlist |
 | `09-perfil.png` | `/conta/perfil/` | Perfil |
+| `10-estatisticas.png` | `/estatisticas/` | Estatísticas + gráficos |
+| `11-catalogo-generos.png` | `/generos/` | CRUD de gêneros |
 
-## Como capturar (manual)
+## Automático (Playwright)
+
+Terminal 1:
 
 ```powershell
 .\venv\Scripts\activate
-python manage.py runserver
+python manage.py runserver 8765
 ```
 
-Use **Win + Shift + S** (ou similar) em cada URL. Conta demo local: `demo` / `demo123456` (se criada).
-
-## Automático (opcional)
-
-Com Playwright instalado (`pip install playwright` + `python -m playwright install chromium`):
+Terminal 2:
 
 ```powershell
+.\venv\Scripts\activate
+pip install playwright
+python -m playwright install chromium
 python scripts/capture_screenshots.py
 ```
 
-Depois atualize o README se renomear arquivos.
+Conta usada pelo script: **`demo`** / **`demo123456`** (criada automaticamente se não existir).
+
+## Manual
+
+`Win + Shift + S` em cada URL com o servidor em **http://127.0.0.1:8000/** (ou 8765). Salve PNG ~1400px de largura nesta pasta.

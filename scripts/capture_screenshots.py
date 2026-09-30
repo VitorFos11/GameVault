@@ -1,5 +1,5 @@
 """
-Gera capturas em docs/assets/telas/ para o README.
+Gera capturas em docs/assets/telas/ para o README (UI v2).
 Requer: pip install playwright && python -m playwright install chromium
 Servidor: python manage.py runserver 8765 (em outro terminal)
 """
@@ -10,16 +10,21 @@ BASE = Path(__file__).resolve().parents[1]
 OUT = BASE / "docs" / "assets" / "telas"
 BASE_URL = "http://127.0.0.1:8765"
 
-PAGES = [
-    ("01-landing.png", "/"),
-    ("02-login.png", "/conta/login/"),
-    ("03-registro.png", "/conta/registro/"),
-    ("04-dashboard.png", "/dashboard/"),
-    ("05-biblioteca.png", "/biblioteca/"),
-    ("07-formulario.png", "/novo/"),
-    ("08-wishlist.png", "/lista-desejos/"),
-    ("09-perfil.png", "/conta/perfil/"),
-]
+
+def _ensure_demo_user():
+    import os
+    import sys
+
+    import django
+
+    sys.path.insert(0, str(BASE))
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gamevault.settings")
+    django.setup()
+    from django.contrib.auth import get_user_model
+
+    User = get_user_model()
+    if not User.objects.filter(username="demo").exists():
+        User.objects.create_user(username="demo", password="demo123456", email="demo@gamevault.local")
 
 
 def main():
@@ -30,19 +35,53 @@ def main():
 
     OUT.mkdir(parents=True, exist_ok=True)
 
+    public_pages = [
+        ("01-landing.png", "/"),
+        ("02-login.png", "/conta/login/"),
+    ]
+    auth_pages = [
+        ("04-dashboard.png", "/dashboard/"),
+        ("05-biblioteca.png", "/biblioteca/"),
+        ("07-formulario.png", "/novo/"),
+        ("08-wishlist.png", "/lista-desejos/"),
+        ("10-estatisticas.png", "/estatisticas/"),
+        ("11-catalogo-generos.png", "/generos/"),
+        ("09-perfil.png", "/conta/perfil/"),
+    ]
+
     with sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page(viewport={"width": 1440, "height": 900})
 
+        for name, path in public_pages:
+            page.goto(f"{BASE_URL}{path}")
+            page.wait_for_timeout(700)
+            page.screenshot(path=str(OUT / name), full_page=True)
+            print("OK", name)
+
         page.goto(f"{BASE_URL}/conta/login/")
         page.fill('input[name="username"]', "demo")
         page.fill('input[name="password"]', "demo123456")
-        page.click('button[type="submit"]')
-        page.wait_for_timeout(800)
+        page.get_by_role("button", name="Entrar").click()
+        page.wait_for_load_state("networkidle")
+        page.wait_for_timeout(500)
 
-        for name, path in PAGES:
+        page.goto(f"{BASE_URL}/biblioteca/")
+        page.wait_for_timeout(600)
+        link = page.locator("a[href*='/jogo/']").first
+        if link.count():
+            href = link.get_attribute("href") or ""
+            url = href if href.startswith("http") else f"{BASE_URL}{href}"
+            page.goto(url)
+            page.wait_for_timeout(700)
+            page.screenshot(path=str(OUT / "06-detalhe.png"), full_page=True)
+            print("OK", "06-detalhe.png")
+        else:
+            print("SKIP 06-detalhe.png (sem jogos na biblioteca demo)")
+
+        for name, path in auth_pages:
             page.goto(f"{BASE_URL}{path}")
-            page.wait_for_timeout(600)
+            page.wait_for_timeout(700)
             page.screenshot(path=str(OUT / name), full_page=True)
             print("OK", name)
 
@@ -50,4 +89,5 @@ def main():
 
 
 if __name__ == "__main__":
+    _ensure_demo_user()
     main()
