@@ -74,17 +74,32 @@ def main():
             href = link.get_attribute("href") or ""
             url = href if href.startswith("http") else f"{BASE_URL}{href}"
             page.goto(url)
-            page.wait_for_timeout(700)
-            page.screenshot(path=str(OUT / "06-detalhe.png"), full_page=True)
+            page.wait_for_load_state("networkidle")
+            page.wait_for_timeout(500)
+            page.locator(".gv-topbar").get_by_role("button", name="Sair").wait_for(
+                state="visible", timeout=8000
+            )
+            page.screenshot(path=str(OUT / "06-detalhe.png"), full_page=False)
             print("OK", "06-detalhe.png")
         else:
             print("SKIP 06-detalhe.png (sem jogos na biblioteca demo)")
 
-        for name, path in auth_pages:
+        def shot_authenticated(name: str, path: str) -> None:
             page.goto(f"{BASE_URL}{path}")
-            page.wait_for_timeout(700)
-            page.screenshot(path=str(OUT / name), full_page=True)
+            page.wait_for_load_state("networkidle")
+            page.wait_for_timeout(500)
+            page.locator(".gv-sidebar-footer").get_by_role(
+                "button", name="Sair e trocar usuário"
+            ).wait_for(state="visible", timeout=8000)
+            page.locator(".gv-topbar").get_by_role("button", name="Sair").wait_for(
+                state="visible", timeout=8000
+            )
+            # Viewport (não full_page) mantém sidebar + botão Sair legíveis no README.
+            page.screenshot(path=str(OUT / name), full_page=False)
             print("OK", name)
+
+        for name, path in auth_pages:
+            shot_authenticated(name, path)
 
         browser.close()
 
