@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}GameVault — Sua biblioteca de jogos{% endblock %}
+
+{% block content_public %}
+<div class="gv-landing">
+  <header class="gv-topbar" style="position:relative">
+    <a href="{% url 'landing' %}" class="gv-logo" style="margin:0">
+      <img src="{% static 'img/logo-icon.svg' %}" alt="" width="36" height="36">
+      <img src="{% static 'img/logo-full.svg' %}" alt="GameVault" height="28">
+    </a>
+    <div style="margin-left:auto;display:flex;gap:0.5rem">
+      <a href="{% url 'accounts:login' %}" class="gv-btn gv-btn-ghost">Entrar</a>
+      <a href="{% url 'accounts:registro' %}" class="gv-btn gv-btn-primary">Criar conta</a>
+    </div>
+  </header>
+  <section class="gv-landing-hero">
+    <img src="{% static 'img/logo-icon.svg' %}" alt="" width="72" height="72">
+    <h1>Seus jogos. Seu progresso. Seu GameVault.</h1>
+    <p>Organize, acompanhe estatísticas, wishlist, conquistas e redescubra sua coleção em uma interface moderna.</p>
+    <div class="gv-landing-cta">
+      <a href="{% url 'accounts:registro' %}" class="gv-btn gv-btn-primary">Explorar GameVault</a>
+      <a href="{% url 'accounts:login' %}" class="gv-btn gv-btn-ghost">Já tenho conta</a>
+    </div>
+  </section>
+  <footer style="text-align:center;padding:2rem;color:var(--color-text-muted);font-size:0.85rem">
+    GameVault © 2026 · v2.0
+  </footer>
+</div>
+{% endblock %}

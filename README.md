@@ -1,333 +1,59 @@
-# 🎮 GameVault
+# GameVault v2.0
 
-## Sistema de Gerenciamento de Jogos
+Plataforma moderna de biblioteca e acompanhamento de jogos — Django, design system dark/light, estatísticas dinâmicas, wishlist, reviews, conquistas e camada preparada para APIs externas (RAWG).
 
-O **GameVault** é uma aplicação web desenvolvida em **Django** com o objetivo de gerenciar um catálogo de jogos digitais.
+## Funcionalidades
 
-O sistema permite cadastrar, visualizar, editar e excluir jogos, além de possuir recursos adicionais como pesquisa, dashboard com estatísticas, upload de capas e interface moderna com modo claro e escuro.
+- CRUD completo de jogos (capa, banner, progresso, status, tags)
+- Dashboard com cards e gráficos (Chart.js) alimentados pelo banco
+- Biblioteca com busca, filtros, ordenação, paginação, grade/lista
+- Autenticação (registro, login, perfil, avatar)
+- Wishlist com prioridade e preços alvo
+- Avaliações pessoais (1–5), conquistas e sessões de jogo
+- Notificações, importação via RAWG (com `RAWG_API_KEY`)
+- Admin Django aprimorado
+- SQLite local + suporte PostgreSQL via `DATABASE_URL`
+- Documentação DBeaver: [docs/DATABASE_DBEAVER.md](docs/DATABASE_DBEAVER.md)
 
----
-
-# 🚀 Funcionalidades
-
-## 🎮 Gerenciamento de Jogos (CRUD)
-
-O sistema possui todas as operações básicas:
-
-* ✅ Cadastro de jogos
-* ✅ Visualização dos jogos cadastrados
-* ✅ Edição de informações
-* ✅ Exclusão com confirmação
-* ✅ Página de detalhes do jogo
-
-## 🖼️ Upload de Capas
-
-Cada jogo pode possuir uma imagem de capa personalizada, tornando a visualização semelhante a uma biblioteca digital de jogos.
-
-## 🔍 Pesquisa
-
-Possui uma barra de pesquisa que permite encontrar jogos rapidamente pelo nome.
-
-## 📊 Dashboard
-
-O sistema apresenta informações gerais do catálogo:
-
-* Quantidade de jogos cadastrados
-* Quantidade de gêneros
-* Jogo mais caro
-* Estatísticas de plataformas
-
-## 🌙 Tema Claro e Escuro
-
-A interface possui alternância entre:
-
-* Modo claro
-* Modo escuro
-
-proporcionando uma melhor experiência de navegação.
-
----
-
-# 🛠️ Tecnologias Utilizadas
-
-## Backend
-
-* Python
-* Django
-
-## Banco de Dados
-
-* SQLite
-
-## Frontend
-
-* HTML5
-* CSS3
-* Django Templates
-
-## Outros recursos
-
-* Django Admin
-* Upload de imagens
-* Sistema de mensagens
-* ModelForms
-
----
-
-# 📂 Estrutura do Projeto
-
-```
-GameVault
-│
-├── jogos
-│   ├── models.py
-│   ├── views.py
-│   ├── forms.py
-│   ├── urls.py
-│   └── templates
-│
-├── gamevault
-│   ├── settings.py
-│   └── urls.py
-│
-├── media
-│   └── capas
-│
-├── static
-│   └── css
-│
-├── db.sqlite3
-└── manage.py
-```
-
----
-
-# ⚙️ Como executar o projeto
-
-## 1. Clone o repositório
-
-```bash
-git clone URL_DO_REPOSITORIO
-```
-
----
-
-## 2. Entre na pasta do projeto
-
-```bash
-cd GameVault
-```
-
----
-
-## 3. Crie um ambiente virtual
+## Instalação rápida
 
 ```bash
 python -m venv venv
-```
-
----
-
-## 4. Ative o ambiente virtual
-
-Windows:
-
-```bash
-venv\Scripts\activate
-```
-
-Linux/Mac:
-
-```bash
-source venv/bin/activate
-```
-
----
-
-## 5. Instale as dependências
-
-```bash
-pip install django pillow
-```
-
----
-
-## 6. Execute as migrations
-
-```bash
-python manage.py makemigrations
-
+venv\Scripts\activate          # Windows
+pip install -r requirements.txt
+copy .env.example .env
 python manage.py migrate
-```
-
----
-
-## 7. Crie um usuário administrador
-
-```bash
 python manage.py createsuperuser
-```
-
----
-
-## 8. Execute o servidor
-
-```bash
 python manage.py runserver
 ```
 
-Acesse:
+Acesse: http://127.0.0.1:8000/
+
+## Variáveis de ambiente
+
+Veja [.env.example](.env.example).
+
+## Testes e CI
+
+```bash
+python manage.py test jogos
+```
+
+Workflow GitHub Actions em `.github/workflows/ci.yml`.
+
+## Estrutura
 
 ```
-http://127.0.0.1:8000/
+gamevault/          # settings, urls
+accounts/           # perfil e auth
+jogos/              # models, views, services
+templates/          # layout shell + páginas
+static/             # CSS, JS, logo SVG
+docs/               # DBeaver / banco
 ```
 
-Área administrativa:
+## Versão
 
-```
-http://127.0.0.1:8000/admin/
-```
+**GameVault v2.0** — evolução do CRUD v1.0 mantendo compatibilidade de rotas (`/lista/`, `/novo/`, etc.).
 
----
-
-# 📸 Interface do Sistema
-
-O GameVault possui:
-
-* Página inicial com catálogo de jogos
-* Cards com capas e informações
-* Tela de cadastro
-* Tela de edição
-* Tela de detalhes
-* Tela de exclusão
-* Painel administrativo
-
----
-
-# 🎯 Objetivo do Projeto
-
-O projeto foi desenvolvido para aplicar conceitos de desenvolvimento **Backend com Django**, utilizando:
-
-* Modelagem de dados
-* Relacionamentos entre tabelas
-* CRUD completo
-* Templates Django
-* Formulários
-* Upload de arquivos
-* Organização de aplicações web
-
----
-
-# 📸 Demonstração do Sistema
-
-
-## 🏠 Página Inicial
-
-Tela principal do GameVault com catálogo de jogos, capas, estatísticas e navegação.
-
-<p align="center">
-
-<img src="images/home.png" width="900">
-
-</p>
-
-
----
-
-
-## 🎮 Cadastro de Jogos
-
-Tela de cadastro de novos jogos com informações completas e upload de capa.
-
-<p align="center">
-
-<img src="images/cadastro.png" width="900">
-
-</p>
-
-
----
-
-
-## 🔎 Pesquisa de Jogos
-
-Sistema de busca para localizar jogos pelo nome.
-
-<p align="center">
-
-<img src="images/pesquisa.png" width="900">
-
-</p>
-
-
----
-
-
-## 📄 Detalhes do Jogo
-
-Página com todas as informações do jogo selecionado, incluindo capa, descrição e dados cadastrados.
-
-<p align="center">
-
-<img src="images/detalhes.png" width="900">
-
-</p>
-
-
----
-
-
-## 🗑️ Exclusão de Jogos
-
-Tela de confirmação para remoção segura de jogos cadastrados.
-
-<p align="center">
-
-<img src="images/excluir.png" width="900">
-
-</p>
-
-
----
-
-
-# 🔐 Área Administrativa Django
-
-
-## Login Administrativo
-
-Página de autenticação do painel administrativo do Django.
-
-<p align="center">
-
-<img src="images/login-admin.png" width="900">
-
-</p>
-
-
----
-
-
-## Painel Administrativo
-
-Dashboard administrativo utilizado para gerenciar jogos e gêneros cadastrados.
-
-<p align="center">
-
-<img src="images/home-admin.png" width="900">
-
-</p>
-
-# 👨‍💻 Desenvolvedor
-
-**Vitor Faria de Oliveira e Silva**
-**Rafael Junqueira de Souza**
-Projeto acadêmico desenvolvido para a disciplina de Backend utilizando Python e Django.
-
----
-
-# 📌 Versão
-
-**GameVault v1.0**
-
-Desenvolvido em 2026 🎮
+Desenvolvido em 2026.

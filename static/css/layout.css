@@ -1,0 +1,93 @@
+.gv-app {
+  display: flex;
+  min-height: 100vh;
+}
+
+.gv-sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 1rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  transition: width var(--transition);
+}
+
+.gv-sidebar.collapsed {
+  width: var(--sidebar-collapsed);
+}
+
+.gv-sidebar.collapsed .nav-label,
+.gv-sidebar.collapsed .logo-full {
+  display: none;
+}
+
+.gv-main-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.gv-topbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  background: rgba(18, 20, 28, 0.85);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+[data-theme="light"] .gv-topbar {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.gv-content {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.gv-mobile-nav {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .gv-sidebar {
+    display: none;
+  }
+  .gv-mobile-nav {
+    display: flex;
+    justify-content: space-around;
+    padding: 0.5rem;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+  }
+  .gv-mobile-nav a {
+    font-size: 0.7rem;
+    text-align: center;
+    color: var(--color-text-muted);
+    padding: 0.35rem;
+  }
+  .gv-mobile-nav a.active {
+    color: var(--color-primary);
+  }
+  .gv-content {
+    padding-bottom: 4.5rem;
+  }
+}

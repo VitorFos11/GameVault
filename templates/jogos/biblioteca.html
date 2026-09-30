@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Biblioteca — GameVault{% endblock %}
+
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:1rem">
+  <div>
+    <h1 class="gv-page-title">Minha biblioteca</h1>
+    <p class="gv-page-sub">{{ total_filtrado }} jogo(s) encontrado(s)</p>
+  </div>
+  <div style="display:flex;gap:0.5rem">
+    <a href="?{% for k,v in request.GET.items %}{% if k != 'view' %}{{ k }}={{ v }}&{% endif %}{% endfor %}view=grid" class="gv-btn gv-btn-ghost">Grade</a>
+    <a href="?{% for k,v in request.GET.items %}{% if k != 'view' %}{{ k }}={{ v }}&{% endif %}{% endfor %}view=list" class="gv-btn gv-btn-ghost">Lista</a>
+  </div>
+</div>
+
+<form class="gv-filters" method="get">
+  <input type="hidden" name="view" value="{{ view_mode }}">
+  <input type="search" name="buscar" placeholder="Buscar..." value="{{ busca }}">
+  <select name="status" aria-label="Status">
+    <option value="">Status</option>
+    {% for val, label in status_choices %}
+    <option value="{{ val }}" {% if filtros.status == val %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <select name="plataforma" aria-label="Plataforma">
+    <option value="">Plataforma</option>
+    {% for p in plataformas %}
+    <option value="{{ p.slug }}" {% if filtros.plataforma == p.slug %}selected{% endif %}>{{ p.nome }}</option>
+    {% endfor %}
+  </select>
+  <select name="genero" aria-label="Gênero">
+    <option value="">Gênero</option>
+    {% for g in generos %}
+    <option value="{{ g.slug }}" {% if filtros.genero == g.slug %}selected{% endif %}>{{ g.nome }}</option>
+    {% endfor %}
+  </select>
+  <input type="number" name="ano" placeholder="Ano" value="{{ filtros.ano }}" min="1970" max="2030">
+  <input type="number" step="0.5" name="nota_min" placeholder="Nota mín." value="{{ filtros.nota_min }}">
+  <select name="ordenar" aria-label="Ordenar">
+    <option value="recente" {% if filtros.ordenar == 'recente' or not filtros.ordenar %}selected{% endif %}>Recentes</option>
+    <option value="nome" {% if filtros.ordenar == 'nome' %}selected{% endif %}>Nome</option>
+    <option value="lancamento" {% if filtros.ordenar == 'lancamento' %}selected{% endif %}>Lançamento</option>
+    <option value="nota" {% if filtros.ordenar == 'nota' %}selected{% endif %}>Avaliação</option>
+    <option value="horas" {% if filtros.ordenar == 'horas' %}selected{% endif %}>Horas</option>
+    <option value="preco" {% if filtros.ordenar == 'preco' %}selected{% endif %}>Preço</option>
+  </select>
+  <button type="submit" class="gv-btn gv-btn-primary">Filtrar</button>
+  <a href="{% url 'biblioteca' %}" class="gv-btn gv-btn-ghost">Limpar</a>
+</form>
+
+{% if jogos %}
+  {% if view_mode == 'list' %}
+  <div class="gv-game-list">
+    {% for jogo in jogos %}
+    <div class="gv-list-row">
+      {% if jogo.capa %}<img src="{{ jogo.capa.url }}" alt="">{% else %}<div class="cover-placeholder" style="width:80px;height:100px">🎮</div>{% endif %}
+      <div>
+        <strong><a href="{% url 'detalhe_jogo' jogo.id %}">{{ jogo.nome }}</a></strong>
+        <p class="meta">{{ jogo.genero.nome }} · {{ jogo.nome_plataforma }}</p>
+        <span class="gv-badge status-{{ jogo.status }}">{{ jogo.get_status_display }}</span>
+      </div>
+      <a href="{% url 'detalhe_jogo' jogo.id %}" class="gv-btn gv-btn-ghost">Abrir</a>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="gv-game-grid">
+    {% for jogo in jogos %}
+      {% include "includes/game_card.html" with jogo=jogo %}
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% include "includes/pagination.html" with page_obj=jogos %}
+{% else %}
+  {% include "includes/empty_state.html" with message="Sua biblioteca está vazia. Comece a montar seu GameVault." cta_url="cadastrar_jogo" cta_label="Adicionar primeiro jogo" %}
+{% endif %}
+{% endblock %}

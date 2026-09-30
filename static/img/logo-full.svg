@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" fill="none" role="img" aria-label="GameVault">
+  <defs>
+    <linearGradient id="gvGrad2" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="6" width="36" height="36" rx="8" stroke="url(#gvGrad2)" stroke-width="2.5" fill="#0f1117"/>
+  <path d="M20 16v6M17 19h6" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="14" cy="26" r="2.5" fill="#6366f1"/>
+  <circle cx="26" cy="26" r="2.5" fill="#6366f1"/>
+  <path d="M12 32c3 3 16 3 19 0" stroke="#a5b4fc" stroke-width="1.8" stroke-linecap="round"/>
+  <text x="50" y="32" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="#f1f5f9">Game</text>
+  <text x="118" y="32" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="700" fill="url(#gvGrad2)">Vault</text>
+</svg>
