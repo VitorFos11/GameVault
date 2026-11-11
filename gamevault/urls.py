@@ -3,6 +3,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+from accounts.views import GameVaultLoginView
 from gamevault.admin_site import GameVaultAdminSite
 
 # Substitui o admin padrão pelo admin customizado
@@ -10,6 +11,7 @@ admin.site.__class__ = GameVaultAdminSite
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("login/", GameVaultLoginView.as_view(), name="login"),
     path("conta/", include("accounts.urls")),
     path("", include("jogos.urls")),
 ]

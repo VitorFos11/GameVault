@@ -6,6 +6,7 @@ urlpatterns = [
     path("", views.landing, name="landing"),
     path("dashboard/", views.dashboard, name="dashboard"),
     path("biblioteca/", views.biblioteca, name="biblioteca"),
+    path("biblioteca/exportar/", views.exportar_biblioteca_csv, name="exportar_biblioteca_csv"),
     path("explorar/", views.explorar_jogos, name="explorar_jogos"),
     path("novo/", views.cadastrar_jogo, name="cadastrar_jogo"),
     path("jogo/<int:id>/biblioteca/adicionar/", views.adicionar_biblioteca, name="adicionar_biblioteca"),

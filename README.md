@@ -48,7 +48,7 @@ Para tornar alguém administrador: Django Admin → **Usuários** → marque **S
 | Etapa | O que você faz |
 |-------|----------------|
 | **1. Conta** | Registro em `/conta/registro/` ou login |
-| **1b. Sessão** | **Sair** (sidebar, topbar ou Configurações) → `/conta/login/` |
+| **1b. Sessão** | **Sair** (sidebar, topbar ou Configurações) → `/login/` |
 | **2. Explorar** | `/explorar/` — catálogo global; **+ Biblioteca** adiciona o jogo à sua coleção |
 | **3. Biblioteca** | `/biblioteca/` — só jogos que **você** adicionou; filtros e progresso pessoal |
 | **4. Admin catálogo** | Staff: **+ Jogo**, gêneros/plataformas, `/admin/` Jazzmin |
@@ -158,10 +158,11 @@ python manage.py runserver
 | Página | URL |
 |--------|-----|
 | Landing | `/` |
-| Registro / Login / Sair | `/conta/registro/` · `/conta/login/` · POST `/conta/logout/` |
+| Registro / Login / Sair | `/conta/registro/` · `/login/` (alias `/conta/login/`) · POST `/conta/logout/` |
 | Dashboard | `/dashboard/` |
 | Explorar catálogo | `/explorar/` |
 | Minha biblioteca | `/biblioteca/` |
+| Relatório CSV (filtros da biblioteca) | `/biblioteca/exportar/?status=...` |
 | Adicionar à biblioteca | POST `/jogo/<id>/biblioteca/adicionar/` |
 | Wishlist | `/lista-desejos/` |
 | Estatísticas | `/estatisticas/` |

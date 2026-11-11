@@ -157,3 +157,37 @@ class GameVaultTests(TestCase):
         self.client.login(username="admin", password="senha12345")
         response = self.client.get("/admin/")
         self.assertIn(response.status_code, (200, 302))
+
+
+class RequisitosMinimosTests(TestCase):
+    """Área restrita, isolamento por usuário, N:N through e relatório."""
+
+    setUp = GameVaultTests.setUp  # reusa fixtures sem reexecutar os testes da classe base
+
+    def test_area_restrita_redireciona_para_login(self):
+        for nome in ("dashboard", "biblioteca", "estatisticas", "exportar_biblioteca_csv"):
+            response = self.client.get(reverse(nome))
+            self.assertRedirects(
+                response, f"/login/?next={reverse(nome)}", fetch_redirect_response=False
+            )
+
+    def test_home_publica(self):
+        self.assertEqual(self.client.get(reverse("landing")).status_code, 200)
+        self.assertEqual(self.client.get("/login/").status_code, 200)
+
+    def test_nn_through_biblioteca(self):
+        self.assertIn(self.user, self.jogo.usuarios_biblioteca.all())
+        self.assertIn(self.jogo, self.user.jogos_biblioteca.all())
+        self.assertNotIn(self.outro, self.jogo.usuarios_biblioteca.all())
+
+    def test_exportar_csv_somente_do_usuario(self):
+        self.client.login(username="outro", password="senha12345")
+        conteudo = self.client.get(reverse("exportar_biblioteca_csv")).content.decode("utf-8-sig")
+        self.assertNotIn("Test Game", conteudo)
+
+        self.client.login(username="tester", password="senha12345")
+        response = self.client.get(reverse("exportar_biblioteca_csv"), {"status": "playing"})
+        self.assertEqual(response["Content-Type"], "text/csv; charset=utf-8")
+        self.assertIn("Test Game", response.content.decode("utf-8-sig"))
+        filtrado = self.client.get(reverse("exportar_biblioteca_csv"), {"status": "completed"})
+        self.assertNotIn("Test Game", filtrado.content.decode("utf-8-sig"))

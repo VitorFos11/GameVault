@@ -1,8 +1,11 @@
+import csv
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Avg, Count, Q
 from django.db.models.deletion import ProtectedError
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -243,6 +246,30 @@ def explorar_jogos(request):
     return render(request, "jogos/explorar.html", context)
 
 
+@login_required
+def exportar_biblioteca_csv(request):
+    """Relatório CSV da consulta atual (mesmos filtros), só com entradas do usuário logado."""
+    qs = biblioteca_entradas(request.user).select_related("jogo", "jogo__genero")
+    qs, _ = _filtrar_entradas(request, qs)
+    response = HttpResponse(content_type="text/csv; charset=utf-8")
+    response["Content-Disposition"] = 'attachment; filename="relatorio_biblioteca.csv"'
+    response.write("﻿")  # BOM para o Excel abrir acentos corretamente
+    writer = csv.writer(response, delimiter=";")
+    writer.writerow(["Jogo", "Gênero", "Status", "Horas", "Conclusão (%)", "Nota", "Adicionado em"])
+    for e in qs:
+        writer.writerow([
+            e.jogo.nome,
+            e.jogo.genero.nome,
+            e.get_status_display(),
+            e.horas_jogadas,
+            e.percentual_conclusao,
+            e.avaliacao_pessoal if e.avaliacao_pessoal is not None else "",
+            e.adicionado_em.strftime("%d/%m/%Y"),
+        ])
+    return response
+
+
+@login_required
 def lista_jogos(request):
     return biblioteca(request)
 

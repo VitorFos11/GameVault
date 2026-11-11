@@ -11,7 +11,7 @@
       <img src="{% static 'img/logo-full.svg' %}" alt="GameVault" height="28">
     </a>
     <div style="margin-left:auto;display:flex;gap:0.5rem">
-      <a href="{% url 'accounts:login' %}" class="gv-btn gv-btn-ghost">Entrar</a>
+      <a href="{% url 'login' %}" class="gv-btn gv-btn-ghost">Entrar</a>
       <a href="{% url 'accounts:registro' %}" class="gv-btn gv-btn-primary">Criar conta</a>
     </div>
   </header>
@@ -21,7 +21,7 @@
     <p>Organize, acompanhe estatísticas, wishlist, conquistas e redescubra sua coleção em uma interface moderna.</p>
     <div class="gv-landing-cta">
       <a href="{% url 'accounts:registro' %}" class="gv-btn gv-btn-primary">Explorar GameVault</a>
-      <a href="{% url 'accounts:login' %}" class="gv-btn gv-btn-ghost">Já tenho conta</a>
+      <a href="{% url 'login' %}" class="gv-btn gv-btn-ghost">Já tenho conta</a>
     </div>
   </section>
   <footer style="text-align:center;padding:2rem;color:var(--color-text-muted);font-size:0.85rem">

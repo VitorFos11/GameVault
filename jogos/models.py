@@ -104,6 +104,12 @@ class Jogo(models.Model):
         blank=True,
         related_name="jogos_extra",
     )
+    usuarios_biblioteca = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through="EntradaBiblioteca",
+        blank=True,
+        related_name="jogos_biblioteca",
+    )
     capa = models.ImageField(upload_to="capas/", blank=True, null=True)
     banner = models.ImageField(upload_to="banners/", blank=True, null=True)
     website = models.URLField(blank=True)
