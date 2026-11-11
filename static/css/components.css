@@ -313,8 +313,14 @@
   animation: gv-slide-in 0.25s ease;
 }
 
-.gv-toast.success { border-left: 3px solid var(--color-success); }
-.gv-toast.error { border-left: 3px solid var(--color-danger); }
+.gv-toast.success {
+  border-color: var(--color-success);
+  background: color-mix(in srgb, var(--color-success) 10%, var(--color-surface-elevated));
+}
+.gv-toast.error {
+  border-color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 10%, var(--color-surface-elevated));
+}
 
 @keyframes gv-slide-in {
   from { opacity: 0; transform: translateX(12px); }
