@@ -18,6 +18,7 @@ class GameVaultAdminSite(AdminSite):
         from jogos.models import (
             Avaliacao,
             Conquista,
+            EntradaBiblioteca,
             Genero,
             ItemListaDesejo,
             Jogo,
@@ -28,6 +29,8 @@ class GameVaultAdminSite(AdminSite):
         )
 
         jogos_qs = Jogo.objects.all()
+        # Status/horas reais ficam na biblioteca de cada usuário, não no jogo do catálogo.
+        entradas_qs = EntradaBiblioteca.objects.all()
         hoje = timezone.localdate()
         este_mes_inicio = hoje.replace(day=1)
 
@@ -36,13 +39,13 @@ class GameVaultAdminSite(AdminSite):
             "total_usuarios": User.objects.count(),
             "total_generos": Genero.objects.count(),
             "total_plataformas": Plataforma.objects.count(),
-            "jogando": jogos_qs.filter(status=StatusJogo.PLAYING).count(),
-            "concluidos": jogos_qs.filter(
+            "jogando": entradas_qs.filter(status=StatusJogo.PLAYING).count(),
+            "concluidos": entradas_qs.filter(
                 status__in=[StatusJogo.COMPLETED, StatusJogo.MASTERED]
             ).count(),
-            "backlog": jogos_qs.filter(status=StatusJogo.BACKLOG).count(),
+            "backlog": entradas_qs.filter(status=StatusJogo.BACKLOG).count(),
             "wishlist_total": ItemListaDesejo.objects.count(),
-            "total_horas": jogos_qs.aggregate(s=Sum("horas_jogadas"))["s"] or 0,
+            "total_horas": entradas_qs.aggregate(s=Sum("horas_jogadas"))["s"] or 0,
             "media_avaliacao": Avaliacao.objects.aggregate(m=Avg("nota"))["m"],
             "total_conquistas": Conquista.objects.count(),
             "conquistas_ok": Conquista.objects.filter(concluida=True).count(),
@@ -59,7 +62,7 @@ class GameVaultAdminSite(AdminSite):
             # Rótulo resolvido aqui: template Django não indexa dict por variável.
             "por_status": [
                 {**linha, "rotulo": dict(StatusJogo.choices).get(linha["status"], linha["status"])}
-                for linha in jogos_qs.values("status")
+                for linha in entradas_qs.values("status")
                 .annotate(total=Count("id"))
                 .order_by("-total")
             ],
