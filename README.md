@@ -89,6 +89,9 @@ Interface **v2.1** — cada legenda corresponde à imagem **logo abaixo** (mesma
     <td align="center"><strong>Perfil</strong><br><img src="docs/assets/telas/09-perfil.png" alt="Perfil do usuário" width="100%"></td>
     <td align="center"><strong>Configurações e sessão</strong><br><img src="docs/assets/telas/12-configuracoes.png" alt="Configurações e sair" width="100%"></td>
   </tr>
+  <tr>
+    <td align="center" colspan="2"><strong>Admin</strong> (staff)<br><img src="docs/assets/telas/14-admin.png" alt="Painel administrativo com status e atividade das bibliotecas" width="100%"></td>
+  </tr>
 </table>
 
 Para regerar as capturas: [`docs/assets/telas/CAPTURAS.md`](docs/assets/telas/CAPTURAS.md) ou `python scripts/capture_screenshots.py` (com `runserver` na porta **8765**).

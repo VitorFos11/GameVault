@@ -152,6 +152,10 @@ def main() -> None:
             _shot(page, "07-formulario.png", "/novo/")
             if "/novo" not in page.url:
                 raise SystemExit(f"staff_demo não acessou /novo/ (URL atual: {page.url}).")
+            # Admin (Jazzmin) não tem a topbar do site: captura como página "pública".
+            # Tema "auto" do Jazzmin segue o SO; o painel foi desenhado para o escuro.
+            page.emulate_media(color_scheme="dark")
+            _shot(page, "14-admin.png", "/admin/", public=True, full_page=True)
         finally:
             browser.close()
 

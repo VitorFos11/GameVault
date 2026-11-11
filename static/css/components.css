@@ -105,6 +105,7 @@
   justify-content: center;
   gap: 0.4rem;
   padding: 0.55rem 1rem;
+  white-space: nowrap;
   border-radius: var(--radius-sm);
   border: none;
   cursor: pointer;
@@ -413,6 +414,7 @@
 
 .gv-filter-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   align-items: center;
 }

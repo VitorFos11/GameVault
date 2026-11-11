@@ -5,7 +5,7 @@
 | Arquivo | URL (`runserver 8765`) | Conteúdo |
 |---------|------------------------|----------|
 | `01-landing.png` | `/` | Landing pública |
-| `02-login.png` | `/conta/login/` | Login |
+| `02-login.png` | `/login/` | Login |
 | `04-dashboard.png` | `/dashboard/` | Dashboard acadêmico |
 | `05-biblioteca.png` | `/biblioteca/` | Minha biblioteca (entradas do usuário) |
 | `06-detalhe.png` | `/jogo/<id>/` | Detalhe do jogo |
@@ -16,6 +16,7 @@
 | `10-estatisticas.png` | `/estatisticas/` | Estatísticas + gráficos |
 | `11-catalogo-generos.png` | `/generos/` | CRUD de gêneros |
 | `12-configuracoes.png` | `/configuracoes/` | Tema + sair / trocar usuário |
+| `14-admin.png` | `/admin/` | Painel admin: status e atividade das bibliotecas (**staff_demo**) |
 
 ## Automático (Playwright)
 
@@ -35,7 +36,7 @@ python -m playwright install chromium
 python scripts/capture_screenshots.py
 ```
 
-Contas: **`demo`** / **`demo123456`** (usuário comum; biblioteca preenchida com jogos do catálogo) e **`staff_demo`** / **`demo123456`** (só para `07-formulario.png`).
+Contas: **`demo`** / **`demo123456`** (usuário comum; biblioteca preenchida com jogos do catálogo) e **`staff_demo`** / **`demo123456`** (só para `07-formulario.png` e `14-admin.png`).
 
 ## Manual
 
