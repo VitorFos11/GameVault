@@ -77,7 +77,7 @@ def _logout(page) -> None:
         page.locator(TOPBAR_LOGOUT).first.click()
         page.wait_for_load_state("networkidle")
     # Confirma o estado: após sair, o botão Sair da topbar não pode existir.
-    page.goto(f"{BASE_URL}/conta/login/")
+    page.goto(f"{BASE_URL}/login/")
     page.wait_for_selector('input[name="username"]', timeout=TIMEOUT_MS)
 
 
@@ -135,7 +135,7 @@ def main() -> None:
             page = browser.new_page(viewport={"width": 1440, "height": 900})
 
             _shot(page, "01-landing.png", "/", public=True, full_page=True)
-            _shot(page, "02-login.png", "/conta/login/", public=True, full_page=True)
+            _shot(page, "02-login.png", "/login/", public=True, full_page=True)
 
             _login(page, "demo")
             _shot(page, "04-dashboard.png", "/dashboard/")

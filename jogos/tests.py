@@ -191,3 +191,21 @@ class RequisitosMinimosTests(TestCase):
         self.assertIn("Test Game", response.content.decode("utf-8-sig"))
         filtrado = self.client.get(reverse("exportar_biblioteca_csv"), {"status": "completed"})
         self.assertNotIn("Test Game", filtrado.content.decode("utf-8-sig"))
+
+    def test_filtros_invalidos_nao_quebram(self):
+        self.client.login(username="tester", password="senha12345")
+        for params in ({"ano": "abc"}, {"nota_min": "nan"}, {"nota_min": "inf"}, {"nota_min": "x"}):
+            for nome in ("biblioteca", "exportar_biblioteca_csv"):
+                self.assertEqual(self.client.get(reverse(nome), params).status_code, 200, params)
+
+    def test_csv_neutraliza_formulas(self):
+        self.jogo.nome = '=HYPERLINK("http://x")'
+        self.jogo.save()
+        self.client.login(username="tester", password="senha12345")
+        conteudo = self.client.get(reverse("exportar_biblioteca_csv")).content.decode("utf-8-sig")
+        self.assertIn("'=HYPERLINK", conteudo)
+
+    def test_link_exportacao_ignora_paginacao(self):
+        self.client.login(username="tester", password="senha12345")
+        response = self.client.get(reverse("biblioteca"), {"status": "playing", "page": "1", "view": "list"})
+        self.assertEqual(response.context["query_exportacao"], "status=playing")

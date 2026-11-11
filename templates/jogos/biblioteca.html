@@ -70,7 +70,7 @@
   <div class="gv-filter-actions">
     <button type="submit" class="gv-btn gv-btn-primary">Filtrar</button>
     <a href="{% url 'biblioteca' %}" class="gv-btn gv-btn-ghost">Limpar</a>
-    <a href="{% url 'exportar_biblioteca_csv' %}?{{ request.GET.urlencode }}" class="gv-btn gv-btn-ghost">Exportar CSV</a>
+    <a href="{% url 'exportar_biblioteca_csv' %}?{{ query_exportacao }}" class="gv-btn gv-btn-ghost">Exportar CSV</a>
   </div>
 </form>
 

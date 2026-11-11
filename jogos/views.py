@@ -1,4 +1,5 @@
 import csv
+import math
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -103,6 +104,21 @@ def dashboard(request):
     return render(request, "jogos/dashboard.html", context)
 
 
+def _nota_minima(valor):
+    """Nota de filtro vinda da URL: None se vazia, inválida, nan ou inf."""
+    try:
+        nota = float(valor)
+    except ValueError:
+        return None
+    return nota if math.isfinite(nota) else None
+
+
+def _celula_csv(valor):
+    """Neutraliza fórmulas (=, +, -, @) para o Excel não executar o conteúdo."""
+    texto = str(valor)
+    return "'" + texto if texto[:1] in ("=", "+", "-", "@", "\t", "\r") else texto
+
+
 def _filtrar_jogos(request, queryset):
     busca = request.GET.get("buscar", "").strip()
     status = request.GET.get("status", "")
@@ -130,13 +146,11 @@ def _filtrar_jogos(request, queryset):
         queryset = queryset.filter(
             Q(genero__slug=genero) | Q(generos__slug=genero)
         ).distinct()
-    if ano:
-        queryset = queryset.filter(data_lancamento__year=ano)
-    if nota_min:
-        try:
-            queryset = queryset.filter(avaliacao_pessoal__gte=float(nota_min))
-        except ValueError:
-            pass
+    if ano.isdigit():
+        queryset = queryset.filter(data_lancamento__year=int(ano))
+    nota = _nota_minima(nota_min)
+    if nota is not None:
+        queryset = queryset.filter(avaliacao_pessoal__gte=nota)
 
     ordenacao = {
         "nome": "nome",
@@ -147,6 +161,13 @@ def _filtrar_jogos(request, queryset):
         "preco": "-preco",
     }.get(ordenar, "-criado_em")
     return queryset.order_by(ordenacao), busca
+
+
+def _query_sem(params, *chaves):
+    query = params.copy()
+    for chave in chaves:
+        query.pop(chave, None)
+    return query.urlencode()
 
 
 def _filtrar_entradas(request, entradas):
@@ -176,13 +197,11 @@ def _filtrar_entradas(request, entradas):
         entradas = entradas.filter(
             Q(jogo__genero__slug=genero) | Q(jogo__generos__slug=genero)
         ).distinct()
-    if ano:
-        entradas = entradas.filter(jogo__data_lancamento__year=ano)
-    if nota_min:
-        try:
-            entradas = entradas.filter(avaliacao_pessoal__gte=float(nota_min))
-        except ValueError:
-            pass
+    if ano.isdigit():
+        entradas = entradas.filter(jogo__data_lancamento__year=int(ano))
+    nota = _nota_minima(nota_min)
+    if nota is not None:
+        entradas = entradas.filter(avaliacao_pessoal__gte=nota)
 
     ordenacao = {
         "nome": "jogo__nome",
@@ -216,6 +235,7 @@ def biblioteca(request):
         "generos": Genero.objects.all(),
         "filtros": request.GET,
         "total_filtrado": paginator.count,
+        "query_exportacao": _query_sem(request.GET, "page", "view"),
     }
     return render(request, "jogos/biblioteca.html", context)
 
@@ -257,7 +277,7 @@ def exportar_biblioteca_csv(request):
     writer = csv.writer(response, delimiter=";")
     writer.writerow(["Jogo", "Gênero", "Status", "Horas", "Conclusão (%)", "Nota", "Adicionado em"])
     for e in qs:
-        writer.writerow([
+        writer.writerow([_celula_csv(v) for v in (
             e.jogo.nome,
             e.jogo.genero.nome,
             e.get_status_display(),
@@ -265,7 +285,7 @@ def exportar_biblioteca_csv(request):
             e.percentual_conclusao,
             e.avaliacao_pessoal if e.avaliacao_pessoal is not None else "",
             e.adicionado_em.strftime("%d/%m/%Y"),
-        ])
+        )])
     return response
 
 
