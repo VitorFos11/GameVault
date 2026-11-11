@@ -217,3 +217,6 @@ class RequisitosMinimosTests(TestCase):
         # Status vem da biblioteca (entrada "playing"), não do jogo do catálogo (backlog).
         self.assertIn(">Jogando</span>", conteudo)
         self.assertNotIn(">Backlog</span>", conteudo)
+        # Tabela de atividade lista a entrada do usuário, não o jogo do catálogo.
+        self.assertIn("Atividade recente nas bibliotecas", conteudo)
+        self.assertIn(">tester</td>", conteudo)
