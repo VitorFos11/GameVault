@@ -209,3 +209,9 @@ class RequisitosMinimosTests(TestCase):
         self.client.login(username="tester", password="senha12345")
         response = self.client.get(reverse("biblioteca"), {"status": "playing", "page": "1", "view": "list"})
         self.assertEqual(response.context["query_exportacao"], "status=playing")
+
+    def test_admin_por_status_mostra_rotulo(self):
+        self.client.login(username="admin", password="senha12345")
+        conteudo = self.client.get("/admin/").content.decode()
+        self.assertNotIn("{&#x27;wishlist&#x27;", conteudo)
+        self.assertIn(">Backlog</span>", conteudo)

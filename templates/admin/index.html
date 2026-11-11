@@ -108,7 +108,7 @@
       <div class="card-header" style="margin:-1rem -1rem 1rem">Por status</div>
       {% for s in por_status %}
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem;font-size:.85rem">
-        <span style="color:#f1f5f9">{{ status_labels|default_if_none:"" }}{{ s.status }}</span>
+        <span style="color:#f1f5f9">{{ s.rotulo }}</span>
         <span style="background:rgba(99,102,241,.2);color:#a5b4fc;border-radius:99px;padding:1px 8px;font-weight:600;font-size:.78rem">{{ s.total }}</span>
       </div>
       {% empty %}

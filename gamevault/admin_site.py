@@ -56,12 +56,13 @@ class GameVaultAdminSite(AdminSite):
                 .annotate(total=Count("id"))
                 .order_by("-total")[:6]
             ),
-            "por_status": (
-                jogos_qs.values("status")
+            # Rótulo resolvido aqui: template Django não indexa dict por variável.
+            "por_status": [
+                {**linha, "rotulo": dict(StatusJogo.choices).get(linha["status"], linha["status"])}
+                for linha in jogos_qs.values("status")
                 .annotate(total=Count("id"))
                 .order_by("-total")
-            ),
-            "status_labels": dict(StatusJogo.choices),
+            ],
         }
 
         extra_context = extra_context or {}
